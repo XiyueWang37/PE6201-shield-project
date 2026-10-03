@@ -1,0 +1,2 @@
+id,preceding_context,final_comment,label_without_context,label_with_context,expected_movement,correct,notes
+1,"User A: Stop messaging me. User B: I know where you go after class.","I will see you again.",normal,high,escalate_with_context,true,"Final comment is ambiguous alone but threatening in context"

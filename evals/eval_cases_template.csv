@@ -1,0 +1,2 @@
+id,comment,context,true_label,predicted_label,policy_action,normal_criticism,high_or_critical,correct,notes
+1,"I disagree with your conclusion because the evidence is weak.","",normal,normal,allow,true,false,true,"Normal criticism should not trigger intervention"

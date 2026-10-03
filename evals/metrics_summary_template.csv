@@ -1,0 +1,5 @@
+metric,target,result,notes
+false_negative_rate_high_critical,<10%,TBD,Fill after running evals
+false_positive_rate_normal_criticism,<15-20%,TBD,Fill after running evals
+cost_per_1000_comments,reported,TBD,Estimate from token usage and model price
+context_movement_accuracy,reported,TBD,Run final-comment-only versus full-context cases
