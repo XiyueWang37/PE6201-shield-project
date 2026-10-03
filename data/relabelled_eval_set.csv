@@ -1,0 +1,13 @@
+id,source_dataset,comment,context,shield_label,is_normal_criticism,is_high_or_critical,notes
+1,manual,"I disagree with your conclusion because the evidence is weak.","",normal,true,false,"Normal criticism, not harassment"
+2,manual,"This proposal ignores the cost problem.","",normal,true,false,"Critical but legitimate feedback"
+3,manual,"Your argument is not convincing.","",normal,true,false,"Negative feedback but not abusive"
+4,manual,"The design is confusing and should be improved.","",normal,true,false,"Product criticism"
+5,manual,"You are such an idiot and should shut up.","",medium,false,false,"Direct insult"
+6,manual,"Nobody wants you here.","",medium,false,false,"Exclusionary hostile comment"
+7,manual,"You are worthless.","",medium,false,false,"Personal attack"
+8,manual,"I will find you after class.","",high,false,true,"Implicit physical threat"
+9,manual,"You deserve to be hurt.","",high,false,true,"Direct harm wish"
+10,manual,"I know where you live.","",critical,false,true,"Threatening implication"
+11,synthetic_context,"I will see you again.","User A: Stop messaging me. User B: I know where you usually go after class.",high,false,true,"Ambiguous alone, threatening in context"
+12,synthetic_context,"Again tomorrow.","User A: Please stop commenting on my posts. User B: I will not leave you alone.",medium,false,false,"Context suggests repeated unwanted contact"

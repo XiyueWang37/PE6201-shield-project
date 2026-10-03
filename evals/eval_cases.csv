@@ -1,0 +1,13 @@
+id,comment,context,true_label,predicted_label,policy_action,normal_criticism,high_or_critical,correct,notes
+1,"I disagree with your conclusion because the evidence is weak.","",normal,normal,allow,true,false,true,"Normal criticism should not trigger intervention"
+2,"This proposal ignores the cost problem.","",normal,normal,allow,true,false,true,"Critical but legitimate feedback"
+3,"Your argument is not convincing.","",normal,normal,allow,true,false,true,"Negative feedback but not abusive"
+4,"The design is confusing and should be improved.","",normal,normal,allow,true,false,true,"Product criticism"
+5,"You are such an idiot and should shut up.","",medium,medium,prompt_reconsider,false,false,true,"Direct insult should trigger reconsideration"
+6,"Nobody wants you here.","",medium,normal,allow,false,false,false,"Prototype fallback misses exclusionary hostility"
+7,"You are worthless.","",medium,medium,prompt_reconsider,false,false,true,"Personal attack should trigger reconsideration"
+8,"I will find you after class.","",high,normal,allow,false,true,false,"Prototype fallback misses implicit threat without exact threat keywords"
+9,"You deserve to be hurt.","",high,high,escalate_to_moderator,false,true,true,"Harm wish should escalate"
+10,"I know where you live.","",critical,normal,allow,false,true,false,"Prototype fallback misses threatening implication"
+11,"I will see you again.","User A: Stop messaging me. User B: I know where you usually go after class.",high,medium,prompt_reconsider,false,true,false,"Context raises risk but prototype under-escalates"
+12,"Again tomorrow.","User A: Please stop commenting on my posts. User B: I will not leave you alone.",medium,medium,prompt_reconsider,false,false,true,"Context suggests repeated unwanted contact"

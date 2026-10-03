@@ -1,0 +1,6 @@
+metric,target,result,notes
+false_negative_rate_high_critical,<10%,75%,"3 of 4 high/critical cases were not escalated by the local fallback; this shows why the final product needs a contextual LLM classifier and human review for severe/uncertain cases."
+false_positive_rate_normal_criticism,<15-20%,0%,"0 of 4 normal criticism cases were prompted or escalated; the fallback avoids over-prompting but is too conservative on implicit threats."
+overall_accuracy,reported,66.7%,"8 of 12 cases matched the hand label in the small prototype eval set."
+context_movement_design_accuracy,reported,100%,"5 of 5 context cases encode the intended final-comment-only versus full-context comparison."
+cost_per_1000_comments,reported,estimated below USD 0.10,"Placeholder estimate assuming short comments and a low-cost hosted model; replace with measured provider token usage if available."
