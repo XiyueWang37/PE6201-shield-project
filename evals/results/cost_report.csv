@@ -1,5 +1,5 @@
 backend,model_tier,model_id,prevalence_scenario,currency,p_action_success,avg_input_tokens,avg_output_tokens,token_cost_per_1000_comments,expected_fallback_cost_per_1000_comments,total_cost_per_1000_comments,total_cost_per_1000_successful_decisions,necessary_review_load_per_1000,false_positive_escalation_rate,false_negative_rate,missed_severe_harm_cost_modelled,monthly_cost_at_config_volume,source_result_dir
-keyword,local_rules,keyword_local,platform_assumed,USD,0.984833,0.0,0.0,0.0,10.111111,10.111111,10.266825,2.333,0.0,0.007667,0.0,10111.11,evals/results/20261004T090119Z_keyword
-keyword,local_rules,keyword_local,eval_observed_reference_only,USD,0.666667,0.0,0.0,0.0,222.222222,222.222222,333.333333,83.333,0.0,0.25,0.0,222222.22,evals/results/20261004T090119Z_keyword
-llm,cheap_assumed,openai/gpt-4o-mini,platform_assumed,USD,0.9925,200.342,43.797,0.05633,5.0,5.05633,5.094539,10.0,0.0,0.0,0.0,5056.33,evals/results/20261004T092407Z_llm
-llm,cheap_assumed,openai/gpt-4o-mini,eval_observed_reference_only,USD,0.916667,201.917,45.25,0.057437,55.555556,55.612993,60.66872,333.333,0.0,0.0,0.0,55612.99,evals/results/20261004T092407Z_llm
+keyword,local_rules,keyword_local,platform_assumed,USD,0.972125,0.0,0.0,0.0,18.583333,18.583333,19.116197,0.875,0.0,0.009125,0.0,18583.33,evals/results/20261004T093323Z_keyword
+keyword,local_rules,keyword_local,eval_observed_reference_only,USD,0.529412,0.0,0.0,0.0,313.72549,313.72549,592.592593,29.412,0.0,0.352941,0.0,313725.49,evals/results/20261004T093323Z_keyword
+llm,cheap_assumed,openai/gpt-4o-mini,platform_assumed,USD,0.982542,284.429,36.683,0.064674,11.638889,11.703563,11.911518,9.417,0.001875,0.000583,0.0,11703.56,evals/results/20261004T100146Z_llm
+llm,cheap_assumed,openai/gpt-4o-mini,eval_observed_reference_only,USD,0.882353,283.618,36.853,0.064654,78.431373,78.496027,88.962164,362.745,0.009804,0.019608,0.0,78496.03,evals/results/20261004T100146Z_llm

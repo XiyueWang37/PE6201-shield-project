@@ -1,0 +1,5 @@
+prompt_version,split,n,action_accuracy,severity_accuracy,fnr_high_critical,fpr_normal,abstention_rate,high_critical_n,normal_n,fn_count,fp_count
+prompt_v1,dev,44,0.772727,0.590909,0.294118,0.0,0.0,17,17,5,0
+prompt_v1,test,46,0.782609,0.630435,0.222222,0.0,0.0,18,18,4,0
+prompt_v2,dev,44,0.909091,0.75,0.058824,0.0,0.0,17,17,1,0
+prompt_v2,test,46,0.869565,0.73913,0.055556,0.0,0.0,18,18,1,0

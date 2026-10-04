@@ -22,7 +22,7 @@ from policy import action_for_severity
 from shield_classifier import ShieldResult
 
 ROOT = Path(__file__).resolve().parents[1]
-PROMPT_VERSION = os.getenv("SHIELD_PROMPT_VERSION", "prompt_v1")
+PROMPT_VERSION = os.getenv("SHIELD_PROMPT_VERSION", "prompt_v2")
 CONFIG = {
     "BACKEND": os.getenv("SHIELD_LLM_BACKEND", "openai_compatible"),
     "MODEL": os.getenv("SHIELD_LLM_MODEL", "openai/gpt-4o-mini"),
@@ -52,6 +52,14 @@ class LLMRawResponse:
 
 def build_prompt(comment: str, context: str = "") -> list[dict[str, str]]:
     """Build a deterministic JSON-only harassment classification prompt."""
+    calibration = ""
+    if PROMPT_VERSION == "prompt_v2":
+        calibration = (
+            "Calibration: targeted direct insults such as idiot, stupid, shut up, or worthlessness are at least medium; "
+            "location, schedule, route, workplace, watching, waiting, or regret cues directed at a person are at least high; "
+            "private address, private messages, doxxing, or explicit offline danger are critical when severe. "
+            "Do not escalate ordinary evidence-based criticism of work, ideas, designs, or arguments.\n"
+        )
     system = (
         f"Prompt version: {PROMPT_VERSION}.\n"
         "You classify social media harassment severity. Use exactly one label:\n"
@@ -60,6 +68,7 @@ def build_prompt(comment: str, context: str = "") -> list[dict[str, str]]:
         "- medium: direct insult, targeted hostility, or repeated unwanted contact.\n"
         "- high: credible threat, stalking cue, intimidation, or severe harassment.\n"
         "- critical: explicit violence, doxxing, identity-targeted severe abuse, or urgent safety risk.\n"
+        + calibration +
         "Return only JSON with keys severity, rationale, confidence, abstain. "
         "confidence must be low, medium, or high. abstain is true when the evidence is insufficient."
     )

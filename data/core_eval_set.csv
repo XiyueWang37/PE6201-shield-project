@@ -1,0 +1,103 @@
+id,source,comment,context,shield_label,is_normal_criticism,is_high_or_critical,hard_case_type,tuned_on
+orig_1,manual_original,I disagree with your conclusion because the evidence is weak.,,normal,true,false,original_tuned_case,true
+orig_2,manual_original,This proposal ignores the cost problem.,,normal,true,false,original_tuned_case,true
+orig_3,manual_original,Your argument is not convincing.,,normal,true,false,original_tuned_case,true
+orig_4,manual_original,The design is confusing and should be improved.,,normal,true,false,original_tuned_case,true
+orig_5,manual_original,You are such an idiot and should shut up.,,medium,false,false,original_tuned_case,true
+orig_6,manual_original,Nobody wants you here.,,medium,false,false,original_tuned_case,true
+orig_7,manual_original,You are worthless.,,medium,false,false,original_tuned_case,true
+orig_8,manual_original,I will find you after class.,,high,false,true,original_tuned_case,true
+orig_9,manual_original,You deserve to be hurt.,,high,false,true,original_tuned_case,true
+orig_10,manual_original,I know where you live.,,critical,false,true,original_tuned_case,true
+orig_11,manual_original,I will see you again.,User A: Stop messaging me. User B: I know where you usually go after class.,high,false,true,original_tuned_case,true
+orig_12,manual_original,Again tomorrow.,User A: Please stop commenting on my posts. User B: I will not leave you alone.,medium,false,false,original_tuned_case,true
+cand_1,ai_drafted_human_reviewed,This feature is poorly designed and needs clearer evidence before launch.,,normal,true,false,legitimate_criticism,false
+cand_2,ai_drafted_human_reviewed,Your conclusion ignores the main cost constraint.,,normal,true,false,legitimate_criticism,false
+cand_3,ai_drafted_human_reviewed,I think this analysis is shallow and misses the obvious trade-off.,,normal,true,false,legitimate_criticism,false
+cand_4,ai_drafted_human_reviewed,The model choice is not justified by the results shown here.,,normal,true,false,legitimate_criticism,false
+cand_5,ai_drafted_human_reviewed,This report is confusing and should be rewritten more clearly.,,normal,true,false,legitimate_criticism,false
+cand_6,ai_drafted_human_reviewed,I disagree with your recommendation because the false positives are too high.,,normal,true,false,legitimate_criticism,false
+cand_7,ai_drafted_human_reviewed,The demo does not prove the claim you are making.,,normal,true,false,legitimate_criticism,false
+cand_8,ai_drafted_human_reviewed,Your argument would be stronger with a larger test set.,,normal,true,false,legitimate_criticism,false
+cand_9,ai_drafted_human_reviewed,This design creates too much friction for ordinary users.,,normal,true,false,legitimate_criticism,false
+cand_10,ai_drafted_human_reviewed,"The policy table is understandable, but the classifier evidence is weak.",,normal,true,false,legitimate_criticism,false
+cand_11,ai_drafted_human_reviewed,I do not buy this result without confidence intervals.,,normal,true,false,legitimate_criticism,false
+cand_12,ai_drafted_human_reviewed,The cost estimate needs a source before I would trust it.,,normal,true,false,legitimate_criticism,false
+cand_13,ai_drafted_human_reviewed,This is not production-ready yet.,,normal,true,false,legitimate_criticism,false
+cand_14,ai_drafted_human_reviewed,The assumptions are too optimistic for platform scale.,,normal,true,false,legitimate_criticism,false
+cand_15,ai_drafted_human_reviewed,The interface is awkward and should be simplified.,,normal,true,false,legitimate_criticism,false
+cand_16,ai_drafted_human_reviewed,I would reject this proposal unless the eval is expanded.,,normal,true,false,legitimate_criticism,false
+cand_17,ai_drafted_human_reviewed,The numbers are not convincing because the sample is tiny.,,normal,true,false,legitimate_criticism,false
+cand_18,ai_drafted_human_reviewed,This moderation rule seems overbroad and could annoy users.,,normal,true,false,legitimate_criticism,false
+cand_19,ai_drafted_human_reviewed,Your implementation is too brittle for real deployment.,,normal,true,false,legitimate_criticism,false
+cand_20,ai_drafted_human_reviewed,The README should make the run path easier to follow.,,normal,true,false,legitimate_criticism,false
+cand_21,ai_drafted_human_reviewed,The classifier is not strong enough to support that conclusion.,,normal,true,false,legitimate_criticism,false
+cand_22,ai_drafted_human_reviewed,This example does not demonstrate contextual understanding.,,normal,true,false,legitimate_criticism,false
+cand_23,ai_drafted_human_reviewed,I think the threshold is too aggressive for normal discussion.,,normal,true,false,legitimate_criticism,false
+cand_24,ai_drafted_human_reviewed,"The workflow is understandable, but the data is too small.",,normal,true,false,legitimate_criticism,false
+cand_25,ai_drafted_human_reviewed,You should explain why this beats a keyword baseline.,,normal,true,false,legitimate_criticism,false
+cand_26,ai_drafted_human_reviewed,This is a bad metric for the problem you describe.,,normal,true,false,legitimate_criticism,false
+cand_27,ai_drafted_human_reviewed,The sample looks cherry-picked and needs random selection.,,normal,true,false,legitimate_criticism,false
+cand_28,ai_drafted_human_reviewed,The argument is incomplete without failure cases.,,normal,true,false,legitimate_criticism,false
+cand_29,ai_drafted_human_reviewed,This section is vague and should name the trade-offs.,,normal,true,false,legitimate_criticism,false
+cand_30,ai_drafted_human_reviewed,"The product idea is useful, but the evaluation is still thin.",,normal,true,false,legitimate_criticism,false
+cand_31,ai_drafted_human_reviewed,"The code runs, but the claims are stronger than the evidence.",,normal,true,false,legitimate_criticism,false
+cand_32,ai_drafted_human_reviewed,I would not deploy this without a better false-positive test.,,normal,true,false,legitimate_criticism,false
+cand_33,ai_drafted_human_reviewed,This assumption does not hold for a large platform.,,normal,true,false,legitimate_criticism,false
+cand_34,ai_drafted_human_reviewed,The architecture is clear but the classifier needs validation.,,normal,true,false,legitimate_criticism,false
+cand_35,ai_drafted_human_reviewed,The report should be more honest about what was not measured.,,normal,true,false,legitimate_criticism,false
+cand_36,ai_drafted_human_reviewed,You are such a fool for posting this.,,medium,false,false,direct_insult,false
+cand_37,ai_drafted_human_reviewed,Nobody here wants your comments.,,medium,false,false,targeted_exclusion,false
+cand_38,ai_drafted_human_reviewed,Shut up and stop embarrassing yourself.,,medium,false,false,direct_insult,false
+cand_39,ai_drafted_human_reviewed,"Your ideas are trash, but I am talking about the proposal, not you.",,low,false,false,non_targeted_profanity,false
+cand_40,ai_drafted_human_reviewed,"This whole thread is a mess, what the hell is going on?",,low,false,false,non_targeted_profanity,false
+cand_41,ai_drafted_human_reviewed,You keep making the same stupid point.,,medium,false,false,direct_insult,false
+cand_42,ai_drafted_human_reviewed,"Go away, no one asked for you.",,medium,false,false,targeted_exclusion,false
+cand_43,ai_drafted_human_reviewed,"Classic genius move, breaking everything again.",,low,false,false,sarcasm,false
+cand_44,ai_drafted_human_reviewed,"Wow, another brilliant failure from you.",,medium,false,false,sarcasm,false
+cand_45,ai_drafted_human_reviewed,"This is damn frustrating, but the bug is fixable.",,low,false,false,non_targeted_profanity,false
+cand_46,ai_drafted_human_reviewed,You are useless in every discussion.,,medium,false,false,direct_insult,false
+cand_47,ai_drafted_human_reviewed,"Stop replying to me, you creep.",,medium,false,false,targeted_insult,false
+cand_48,ai_drafted_human_reviewed,Your comment is nonsense.,,low,false,false,legitimate_criticism,false
+cand_49,ai_drafted_human_reviewed,You always ruin every conversation.,,medium,false,false,targeted_hostility,false
+cand_50,ai_drafted_human_reviewed,That take is idiotic.,,low,false,false,idea_targeted_insult,false
+cand_51,ai_drafted_human_reviewed,You are an idiot.,,medium,false,false,direct_insult,false
+cand_52,ai_drafted_human_reviewed,What a stupid design decision.,,low,false,false,idea_targeted_insult,false
+cand_53,ai_drafted_human_reviewed,Everyone should block you.,,medium,false,false,targeted_exclusion,false
+cand_54,ai_drafted_human_reviewed,You do not belong in this community.,,medium,false,false,targeted_exclusion,false
+cand_55,ai_drafted_human_reviewed,Your code is broken as hell.,,low,false,false,non_targeted_profanity,false
+cand_56,ai_drafted_human_reviewed,I know which building you leave from after class.,,high,false,true,implicit_threat,false
+cand_57,ai_drafted_human_reviewed,Keep talking and I will be waiting outside.,,high,false,true,implicit_threat,false
+cand_58,ai_drafted_human_reviewed,"I saved your address, so choose your words carefully.",,critical,false,true,doxxing_threat,false
+cand_59,ai_drafted_human_reviewed,You will regret posting that tonight.,,high,false,true,implicit_threat,false
+cand_60,ai_drafted_human_reviewed,I hope someone hurts you.,,high,false,true,harm_wish,false
+cand_61,ai_drafted_human_reviewed,I am going to make sure you cannot show your face here again.,,high,false,true,intimidation,false
+cand_62,ai_drafted_human_reviewed,Your family should watch their backs.,,critical,false,true,third_party_threat,false
+cand_63,ai_drafted_human_reviewed,I found your workplace. Nice office.,,high,false,true,location_intimidation,false
+cand_64,ai_drafted_human_reviewed,Delete this or I will post your private messages.,,critical,false,true,doxxing_blackmail,false
+cand_65,ai_drafted_human_reviewed,I know your commute now.,,high,false,true,location_intimidation,false
+cand_66,ai_drafted_human_reviewed,Someone should teach you a painful lesson.,,high,false,true,implicit_violence,false
+cand_67,ai_drafted_human_reviewed,I can make people find you if you keep this up.,,critical,false,true,mobilized_threat,false
+cand_68,ai_drafted_human_reviewed,Your account is not the only thing I can reach.,,high,false,true,implicit_threat,false
+cand_69,ai_drafted_human_reviewed,I will show up where you least expect it.,,high,false,true,stalking_cue,false
+cand_70,ai_drafted_human_reviewed,You should be scared to open your door.,,critical,false,true,explicit_fear_threat,false
+cand_71,ai_drafted_human_reviewed,I have screenshots of your address and friends.,,critical,false,true,doxxing_threat,false
+cand_72,ai_drafted_human_reviewed,"Keep laughing, I know where the event is.",,high,false,true,location_intimidation,false
+cand_73,ai_drafted_human_reviewed,I will make sure everyone knows your real name.,,critical,false,true,doxxing_threat,false
+cand_74,ai_drafted_human_reviewed,You will not feel safe after tomorrow.,,high,false,true,implicit_threat,false
+cand_75,ai_drafted_human_reviewed,I have been watching your posts and your route.,,high,false,true,stalking_cue,false
+cand_76,ai_drafted_human_reviewed,I hope your house burns down.,,critical,false,true,severe_harm_wish,false
+cand_77,ai_drafted_human_reviewed,A person like you deserves to be attacked.,,high,false,true,harm_wish,false
+cand_78,ai_drafted_human_reviewed,Say that again and I will come find you.,,high,false,true,explicit_intimidation,false
+cand_79,ai_drafted_human_reviewed,I know the cafe you sit in every morning.,,high,false,true,location_intimidation,false
+cand_80,ai_drafted_human_reviewed,Your private photos would be easy to spread.,,critical,false,true,blackmail,false
+cand_81,ai_drafted_human_reviewed,I can ruin your life with one post.,,critical,false,true,severe_blackmail,false
+cand_82,ai_drafted_human_reviewed,You should disappear before someone makes you.,,critical,false,true,violent_intimidation,false
+cand_83,ai_drafted_human_reviewed,The next message will include your address.,,critical,false,true,doxxing_threat,false
+cand_84,ai_drafted_human_reviewed,People like you should be removed from this place.,,high,false,true,targeted_dehumanization,false
+cand_85,ai_drafted_human_reviewed,I will not stop until you are afraid to post.,,high,false,true,persistent_harassment,false
+cand_86,ai_drafted_human_reviewed,You have no idea how close I am right now.,,high,false,true,stalking_cue,false
+cand_87,ai_drafted_human_reviewed,I know your school and your schedule.,,critical,false,true,location_intimidation,false
+cand_88,ai_drafted_human_reviewed,I will make this personal if you answer again.,,high,false,true,implicit_threat,false
+cand_89,ai_drafted_human_reviewed,Your real name will be public by tonight.,,critical,false,true,doxxing_threat,false
+cand_90,ai_drafted_human_reviewed,I am going to be outside after the meeting.,,high,false,true,implicit_threat,false

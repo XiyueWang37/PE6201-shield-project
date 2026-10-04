@@ -11,14 +11,14 @@ All prices, review time, review wages, monthly volume, prevalence, and harm-cost
 
 | Backend | Model tier | Prevalence | p | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | FN rate |
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| keyword | local_rules | platform_assumed | 0.984833 | 0.0 | 10.111111 | 10.111111 | 2.333 | 0.007667 |
-| keyword | local_rules | eval_observed_reference_only | 0.666667 | 0.0 | 222.222222 | 222.222222 | 83.333 | 0.25 |
-| llm | cheap_assumed | platform_assumed | 0.9925 | 0.05633 | 5.0 | 5.05633 | 10.0 | 0.0 |
-| llm | cheap_assumed | eval_observed_reference_only | 0.916667 | 0.057437 | 55.555556 | 55.612993 | 333.333 | 0.0 |
+| keyword | local_rules | platform_assumed | 0.972125 | 0.0 | 18.583333 | 18.583333 | 0.875 | 0.009125 |
+| keyword | local_rules | eval_observed_reference_only | 0.529412 | 0.0 | 313.72549 | 313.72549 | 29.412 | 0.352941 |
+| llm | cheap_assumed | platform_assumed | 0.982542 | 0.064674 | 11.638889 | 11.703563 | 9.417 | 0.000583 |
+| llm | cheap_assumed | eval_observed_reference_only | 0.882353 | 0.064654 | 78.431373 | 78.496027 | 362.745 | 0.019608 |
 
 ## Break-even
 
-Frontier required p*: 0.994904; observed cheap p: 0.9925; observed frontier p: not measured. No frontier result was measured; do not claim frontier wins or loses.
+Frontier required p*: 0.985403; observed cheap p: 0.982542; observed frontier p: not measured. No frontier result was measured; do not claim frontier wins or loses.
 Note: uses cheap measured token volume with frontier ASSUMED token prices.
 
 ## Unmeasured Tiers

@@ -1,7 +1,7 @@
 backend,model_tier,scenario,value,adjusted_p,total_cost_per_1000_comments
-keyword,local_rules,p_delta,-0.1,0.884833,76.778
-keyword,local_rules,p_delta,0.0,0.984833,10.111333
+keyword,local_rules,p_delta,-0.1,0.872125,85.25
+keyword,local_rules,p_delta,0.0,0.972125,18.583333
 keyword,local_rules,p_delta,0.1,1.0,0.0
-llm,cheap_assumed,p_delta,-0.1,0.8925,71.722997
-llm,cheap_assumed,p_delta,0.0,0.9925,5.05633
-llm,cheap_assumed,p_delta,0.1,1.0,0.05633
+llm,cheap_assumed,p_delta,-0.1,0.882542,78.370007
+llm,cheap_assumed,p_delta,0.0,0.982542,11.703341
+llm,cheap_assumed,p_delta,0.1,1.0,0.064674

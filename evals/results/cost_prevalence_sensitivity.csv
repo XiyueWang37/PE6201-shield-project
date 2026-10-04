@@ -1,7 +1,7 @@
 backend,model_tier,severe_prevalence,p_action_success,total_cost_per_1000_comments,necessary_review_load_per_1000
-keyword,local_rules,0.005,0.988667,7.555556,1.167
-keyword,local_rules,0.01,0.984833,10.111111,2.333
-keyword,local_rules,0.05,0.954167,30.555556,11.667
-llm,cheap_assumed,0.005,0.9925,5.056316,5.0
-llm,cheap_assumed,0.01,0.9925,5.05633,10.0
-llm,cheap_assumed,0.05,0.9925,5.05644,50.0
+keyword,local_rules,0.005,0.976688,15.541667,0.437
+keyword,local_rules,0.01,0.972125,18.583333,0.875
+keyword,local_rules,0.05,0.935625,42.916667,4.375
+llm,cheap_assumed,0.005,0.982833,11.509115,4.708
+llm,cheap_assumed,0.01,0.982542,11.703563,9.417
+llm,cheap_assumed,0.05,0.980208,13.259148,47.083

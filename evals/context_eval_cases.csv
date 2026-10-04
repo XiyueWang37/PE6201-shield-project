@@ -1,6 +1,18 @@
-id,preceding_context,final_comment,legacy_handwritten_label_without_context,legacy_handwritten_label_with_context,expected_movement,correct,notes
-1,User A: Stop messaging me. User B: I know where you usually go after class.,I will see you again.,normal,high,escalate,true,Final comment is ambiguous alone but threatening in context
-2,User A: Please stop commenting on my posts. User B: I will not leave you alone.,Again tomorrow.,normal,medium,escalate,true,Repeated unwanted contact changes the interpretation
-3,User A: Your analysis has several errors. User B: Which part do you disagree with?,This is still not convincing.,normal,normal,no_change,true,"Context confirms ordinary criticism, not harassment"
-4,User A: Stop following me. User B: I saw your bus stop yesterday.,See you soon.,normal,high,escalate,true,Ordinary phrase becomes threatening after stalking context
-5,User A: I do not want to talk. User B: Everyone should ignore you.,Nobody wants you here anyway.,medium,medium,no_change,true,Context is hostile but does not require a new severity band
+id,preceding_context,final_comment,legacy_handwritten_label_without_context,legacy_handwritten_label_with_context,expected_movement,correct,notes,source,shield_label,label_alone,review_status
+1,User A: Stop messaging me. User B: I know where you usually go after class.,I will see you again.,normal,high,escalate,true,Final comment is ambiguous alone but threatening in context,manual_original,high,normal,original_context_case
+2,User A: Please stop commenting on my posts. User B: I will not leave you alone.,Again tomorrow.,normal,medium,escalate,true,Repeated unwanted contact changes the interpretation,manual_original,medium,normal,original_context_case
+3,User A: Your analysis has several errors. User B: Which part do you disagree with?,This is still not convincing.,normal,normal,no_change,true,"Context confirms ordinary criticism, not harassment",manual_original,normal,normal,original_context_case
+4,User A: Stop following me. User B: I saw your bus stop yesterday.,See you soon.,normal,high,escalate,true,Ordinary phrase becomes threatening after stalking context,manual_original,high,normal,original_context_case
+5,User A: I do not want to talk. User B: Everyone should ignore you.,Nobody wants you here anyway.,medium,medium,no_change,true,Context is hostile but does not require a new severity band,manual_original,medium,medium,original_context_case
+cand_91,User A: Please stop tagging me. User B: I know your usual bus stop.,See you there.,,,escalate,,Thread candidate; label after human review.,ai_drafted_human_reviewed,high,normal,confirmed_by_user_from_draft
+cand_92,User A: I disagree with your answer. User B: Which part is wrong?,The evidence is weak.,,,no_change,,Should remain normal if reviewed that way.,ai_drafted_human_reviewed,normal,normal,confirmed_by_user_from_draft
+cand_93,User A: Leave me alone. User B: I will not stop until you listen.,Again tomorrow.,,,escalate,,Context changes a mild phrase.,ai_drafted_human_reviewed,medium,normal,confirmed_by_user_from_draft
+cand_94,"User A: Your code has a bug. User B: Thanks, where?",This function is broken.,,,no_change,,Technical criticism.,ai_drafted_human_reviewed,normal,normal,confirmed_by_user_from_draft
+cand_95,User A: Stop following my posts. User B: I saw your office yesterday.,Nice place.,,,escalate,,Location cue changes meaning.,ai_drafted_human_reviewed,high,normal,confirmed_by_user_from_draft
+cand_96,"User A: That claim is unsupported. User B: Fair, show me the issue.",Your argument is not convincing.,,,no_change,,Criticism in cooperative context.,ai_drafted_human_reviewed,normal,normal,confirmed_by_user_from_draft
+cand_97,User A: Do not contact my family. User B: They are easy to find.,Maybe they should hear this too.,,,escalate,,Family exposure threat.,ai_drafted_human_reviewed,critical,normal,confirmed_by_user_from_draft
+cand_98,User A: Please stop. User B: I know where you park.,I will wait.,,,escalate,,No explicit violence but threatening.,ai_drafted_human_reviewed,high,normal,confirmed_by_user_from_draft
+cand_99,User A: This design is confusing. User B: Why?,Because the flow is inconsistent.,,,no_change,,Hard criticism only.,ai_drafted_human_reviewed,normal,normal,confirmed_by_user_from_draft
+cand_100,User A: I blocked you. User B: Blocks do not work in real life.,See you soon.,,,escalate,,Offline threat.,ai_drafted_human_reviewed,critical,normal,confirmed_by_user_from_draft
+cand_101,User A: Stop messaging me. User B: I know your class schedule.,Tomorrow then.,,,escalate,,Schedule cue.,ai_drafted_human_reviewed,high,normal,confirmed_by_user_from_draft
+cand_102,User A: The paper is weak. User B: That is harsh but fair.,It needs stronger evidence.,,,no_change,,Normal critique with context.,ai_drafted_human_reviewed,normal,normal,confirmed_by_user_from_draft

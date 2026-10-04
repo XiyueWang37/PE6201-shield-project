@@ -1,0 +1,18 @@
+id,preceding_context,final_comment,legacy_handwritten_label_without_context,legacy_handwritten_label_with_context,expected_movement,label_without_context,label_with_context,movement_observed,strict_correct,lenient_correct,missed_expected_change,without_error_type,with_error_type,backend
+1,User A: Stop messaging me. User B: I know where you usually go after class.,I will see you again.,normal,high,escalate,normal,medium,escalate,True,True,False,,,keyword
+2,User A: Please stop commenting on my posts. User B: I will not leave you alone.,Again tomorrow.,normal,medium,escalate,normal,medium,escalate,True,True,False,,,keyword
+3,User A: Your analysis has several errors. User B: Which part do you disagree with?,This is still not convincing.,normal,normal,no_change,normal,normal,no_change,True,True,False,,,keyword
+4,User A: Stop following me. User B: I saw your bus stop yesterday.,See you soon.,normal,high,escalate,normal,normal,no_change,False,False,True,,,keyword
+5,User A: I do not want to talk. User B: Everyone should ignore you.,Nobody wants you here anyway.,medium,medium,no_change,normal,normal,no_change,True,True,False,,,keyword
+cand_91,User A: Please stop tagging me. User B: I know your usual bus stop.,See you there.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_92,User A: I disagree with your answer. User B: Which part is wrong?,The evidence is weak.,,,no_change,normal,normal,no_change,True,True,False,,,keyword
+cand_93,User A: Leave me alone. User B: I will not stop until you listen.,Again tomorrow.,,,escalate,normal,medium,escalate,True,True,False,,,keyword
+cand_94,"User A: Your code has a bug. User B: Thanks, where?",This function is broken.,,,no_change,normal,normal,no_change,True,True,False,,,keyword
+cand_95,User A: Stop following my posts. User B: I saw your office yesterday.,Nice place.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_96,"User A: That claim is unsupported. User B: Fair, show me the issue.",Your argument is not convincing.,,,no_change,normal,normal,no_change,True,True,False,,,keyword
+cand_97,User A: Do not contact my family. User B: They are easy to find.,Maybe they should hear this too.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_98,User A: Please stop. User B: I know where you park.,I will wait.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_99,User A: This design is confusing. User B: Why?,Because the flow is inconsistent.,,,no_change,normal,normal,no_change,True,True,False,,,keyword
+cand_100,User A: I blocked you. User B: Blocks do not work in real life.,See you soon.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_101,User A: Stop messaging me. User B: I know your class schedule.,Tomorrow then.,,,escalate,normal,normal,no_change,False,False,True,,,keyword
+cand_102,User A: The paper is weak. User B: That is harsh but fair.,It needs stronger evidence.,,,no_change,normal,normal,no_change,True,True,False,,,keyword
