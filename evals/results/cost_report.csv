@@ -1,5 +1,3 @@
-backend,model_tier,currency,avg_input_tokens,avg_output_tokens,success_rate,escalate_rate,abstention_rate,token_cost_per_1000_comments,expected_review_cost_per_1000_comments,total_cost_per_1000_comments,total_cost_per_1000_successful_decisions,monthly_cost_at_config_volume,source_result_dir
-keyword,cheap_assumed,USD,0.0,0.0,0.9167,0.0833,0.0,0.0,55.555556,55.555556,60.606061,56155.56,evals/results/20261004T082551Z_keyword
-keyword,frontier_assumed,USD,0.0,0.0,0.9167,0.0833,0.0,0.0,55.555556,55.555556,60.606061,56155.56,evals/results/20261004T082551Z_keyword
-llm,cheap_assumed,USD,208.25,0.0,0.0,1.0,1.0,0.031238,666.666667,666.697904,inf,667297.9,evals/results/20261004T082500Z_llm
-llm,frontier_assumed,USD,208.25,0.0,0.0,1.0,1.0,1.04125,666.666667,667.707917,inf,668307.92,evals/results/20261004T082500Z_llm
+backend,model_tier,model_id,prevalence_scenario,currency,p_action_success,avg_input_tokens,avg_output_tokens,token_cost_per_1000_comments,expected_fallback_cost_per_1000_comments,total_cost_per_1000_comments,total_cost_per_1000_successful_decisions,necessary_review_load_per_1000,false_positive_escalation_rate,false_negative_rate,missed_severe_harm_cost_modelled,monthly_cost_at_config_volume,source_result_dir
+keyword,local_rules,keyword_local,platform_assumed,USD,0.984833,0.0,0.0,0.0,10.111111,10.111111,10.266825,2.333,0.0,0.007667,0.0,10111.11,evals/results/20261004T090119Z_keyword
+keyword,local_rules,keyword_local,eval_observed_reference_only,USD,0.666667,0.0,0.0,0.0,222.222222,222.222222,333.333333,83.333,0.0,0.25,0.0,222222.22,evals/results/20261004T090119Z_keyword

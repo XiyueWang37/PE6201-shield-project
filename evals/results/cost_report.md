@@ -3,22 +3,19 @@
 Currency: USD
 Price date: 2026-10-04
 Price source note: ASSUMED values for course prototype; verify against provider price pages before submission.
+Missed severe harm cost: ASSUMED 0; severe-miss harm is reported as risk, not modelled in the main cost.
 
-All model prices and human-review costs are ASSUMED and must be verified by the user against provider price pages before submission.
+All prices, review time, review wages, monthly volume, prevalence, and harm-cost values are ASSUMED and must be verified before submission.
 
 ## Scenario Results
 
-| Backend | Model tier | Cost / 1,000 comments | Cost / 1,000 successful decisions | Monthly cost | Success rate | Escalate rate | Abstention rate |
-| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
-| keyword | cheap_assumed | 55.555556 | 60.606061 | 56155.56 | 0.9167 | 0.0833 | 0.0 |
-| keyword | frontier_assumed | 55.555556 | 60.606061 | 56155.56 | 0.9167 | 0.0833 | 0.0 |
-| llm | cheap_assumed | 666.697904 | inf | 667297.9 | 0.0 | 1.0 | 1.0 |
-| llm | frontier_assumed | 667.707917 | inf | 668307.92 | 0.0 | 1.0 | 1.0 |
+| Backend | Model tier | Prevalence | p | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | FN rate |
+| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | local_rules | platform_assumed | 0.984833 | 0.0 | 10.111111 | 10.111111 | 2.333 | 0.007667 |
+| keyword | local_rules | eval_observed_reference_only | 0.666667 | 0.0 | 222.222222 | 222.222222 | 83.333 | 0.25 |
 
-## Break-even Note
+## Break-even
 
-The cheap and frontier token tiers have the same observed success rate within a backend unless real LLM measurements are added. Break-even therefore depends on the frontier model improving success enough to offset its higher token price and any reduction in human review fallback.
+Break-even was not computed because valid cheap and frontier LLM runs are not both available.
 
-## Sensitivity
-
-See `cost_sensitivity.csv` for success-rate +/-10 percentage point scenarios.
+See `cost_sensitivity.csv` and `cost_prevalence_sensitivity.csv` for sensitivity tables.

@@ -1,46 +1,39 @@
 # Metrics Summary
 
-All numbers in this file come from reproducible outputs under `evals/results/`. The current submission reports the keyword fallback as the measured runnable backend. The LLM backend interface exists, but no successful LLM call was measured because `SHIELD_API_KEY` was not set during evaluation.
+All active numbers in this file come from script outputs in `evals/latest/`, `evals/results/`, or `evals/results/cost_report.csv`. The old no-key LLM run was invalid because every row abstained due to missing credentials; that result directory has been removed and must not be used as evidence.
 
-## Core Prototype Eval
+## Keyword Baseline
 
-Source: `evals/results/20261004T082551Z_keyword/run_metadata.json`
+Source: `evals/latest/keyword_metrics_summary.csv` and the latest valid keyword run under `evals/results/`.
 
-| Metric | Target | Measured result | Interpretation |
-| --- | ---: | ---: | --- |
-| False negative rate on high/critical harassment | below 10% | 75.0% | 3 of 4 high/critical cases were not escalated. This fails the safety target. |
-| False positive rate on normal criticism | below 15% | 0.0% | 0 of 4 normal criticism cases were prompted or escalated. This passes, but the sample is tiny. |
-| Exact accuracy | reported | 66.7% | 8 of 12 examples matched the hand label. |
-| Macro F1 | reported | 0.395 | Performance is weak across labels. |
-| Abstention rate | reported | 0.0% | Keyword fallback never abstains. |
-| Context strict accuracy | reported | 80.0% | 4 of 5 context movement cases matched the expected movement. |
-| Context lenient accuracy | reported | 80.0% | 1 expected context escalation was missed. |
+| Slice | Metric | Result | Note |
+| --- | --- | ---: | --- |
+| original12 | False negative rate, high/critical | 75.0% | 3 of 4 high/critical cases were not escalated; 95% CI 19.4%-99.4%. This slice was seen while tuning the keyword fallback. |
+| original12 | False positive rate, normal criticism | 0.0% | 0 of 4 normal criticism cases were prompted/escalated; 95% CI 0.0%-60.2%. |
+| original12 | Action accuracy | 66.7% | Predicted action equals gold policy action and does not abstain. |
+| original12 | Macro F1 | 0.395 | Exact severity macro F1. |
+| fresh | Fresh labelled cases | 0 | Waiting for human-reviewed `data/candidates_to_label.csv` merge in Phase C. |
+| context | Strict / lenient movement accuracy | 80.0% / 80.0% | 5 context cases; one expected escalation missed. |
 
-## Lazy Baseline
+## Public Jigsaw Supplement
 
-A lazy all-high baseline gets **0.0% FNR** on high/critical cases, but **100.0% FPR** on normal criticism. This shows why FNR alone is not enough: a system can look safe while over-escalating every ordinary criticism.
+Source: latest valid keyword run `public_jigsaw_metrics.json`.
 
-## Supplementary Public Jigsaw Eval
-
-Source: `evals/results/20261004T082551Z_keyword/public_jigsaw_metrics.json`
-
-The 300-row public Jigsaw sample is mechanically mapped from original Jigsaw labels into Shield labels. It is useful as a larger sanity check, but it is not hand-relabelled Shield ground truth.
-
-| Supplementary metric | Result | Interpretation |
+| Metric | Result | Note |
 | --- | ---: | --- |
-| Sample size | 300 | 100 normal, 100 medium, 50 high, 50 critical mapped examples. |
-| Exact label accuracy | 38.7% | The fallback is too simple for broad public toxicity data. |
-| Normal-reference false positive rate | 5.0% | It mostly avoids over-prompting non-toxic public samples. |
-| High/critical false negative rate | 85.0% | It badly under-escalates severe mapped cases. |
-
-## LLM Backend Status
-
-Source: `evals/results/20261004T082500Z_llm/run_metadata.json`
-
-The LLM backend was exercised without an API key. It therefore abstained on every case and escalated all cases by policy. This is a valid failure-path test, not evidence that an LLM performs better or worse than the keyword fallback.
+| Jigsaw mapped exact severity accuracy | 38.7% | Supplement only; labels are mechanically mapped from Jigsaw fields. |
+| Jigsaw normal-reference FPR | 5.0% | 5 of 100 normal-reference rows were prompted/escalated. |
+| Jigsaw high/critical FNR | 85.0% | Inflated by the mechanical mapping of severe toxic/profanity rows to high. |
+| Jigsaw threat-flagged FNR | 50.0% | 7 of 14 rows with `jigsaw_threat=1` were not escalated. |
+| Jigsaw profanity-only high upgrade rate | 7.7% | 3 of 39 high-mapped rows without threat were escalated. |
 
 ## Cost
 
-Source: `evals/results/cost_report.md`
+Source: `evals/results/cost_report.csv`.
 
-The cost model uses ASSUMED prices and must be verified against provider price pages. Under current assumptions, keyword fallback costs about **USD 55.56 per 1,000 comments** after expected human review fallback. The no-key LLM path costs about **USD 666.70 per 1,000 comments** because every case abstains and goes to review.
+| Backend | Scenario | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | Note |
+| --- | --- | ---: | ---: | ---: | ---: | --- |
+| keyword | platform_assumed | USD 0.00 | USD 10.11 | USD 10.11 | 2.333 | Uses ASSUMED platform prevalence: normal 96%, medium 3%, severe 1%. |
+| keyword | eval_observed_reference_only | USD 0.00 | USD 222.22 | USD 222.22 | 83.333 | Reference only; the 12-row set has an unrealistically high severe share. |
+
+All prices, prevalence, review-time, wage, and harm-cost values are ASSUMED and must be verified before submission. No valid LLM quality or LLM cost result exists yet.

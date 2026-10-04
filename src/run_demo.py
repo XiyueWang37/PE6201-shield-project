@@ -1,5 +1,6 @@
 """Command line demo for Shield."""
 
+from policy import log_decision
 from shield_classifier import classify_comment
 
 
@@ -25,6 +26,7 @@ EXAMPLES = [
 def main() -> None:
     for example in EXAMPLES:
         result = classify_comment(example["comment"], example["context"])
+        log_decision(example["comment"], example["context"], result.severity, result.policy_action, backend="demo_keyword")
         print("=" * 72)
         print(example["name"])
         print(f"Context: {example['context'] or '[none]'}")

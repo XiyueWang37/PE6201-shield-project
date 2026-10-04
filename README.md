@@ -2,7 +2,7 @@
 
 Shield is a PE6201 final project prototype for classifying social media harassment severity in context. It maps a severity label (`normal`, `low`, `medium`, `high`, `critical`) into a deterministic product action: `allow`, `prompt_reconsider`, or `escalate_to_moderator`.
 
-The current measured backend is the keyword fallback. An LLM classifier interface is implemented, but no successful LLM call is reported unless `SHIELD_API_KEY` is provided and `evals/run_eval.py --backend llm` is rerun.
+The current measured backend is the keyword fallback. An LLM classifier interface is implemented, but no LLM metric is reported until a valid run is produced with `SHIELD_API_KEY` or a committed cache. The old no-key LLM run was invalidated because it measured only missing-credential abstention.
 
 ## Persona
 
@@ -56,9 +56,9 @@ evals/
   README.md
   run_eval.py
   cost_model.py
-  eval_cases.csv
+  latest/
   context_eval_cases.csv
-  metrics_summary.csv
+  legacy/
   results/
 docs/
   architecture.md
@@ -105,7 +105,7 @@ LLM backend:
 
 ```bash
 export SHIELD_API_KEY="your_provider_key"
-python3 evals/run_eval.py --backend llm --jigsaw-n 0
+python3 evals/run_eval.py --backend llm --jigsaw-n 300
 ```
 
 Cost model:
@@ -116,7 +116,7 @@ python3 evals/cost_model.py
 
 ## Metrics Targeted and Reached
 
-Measured keyword results come from `evals/results/20261004T082551Z_keyword/`.
+Measured keyword results are written to `evals/latest/keyword_metrics_summary.csv` and the latest valid timestamped keyword run under `evals/results/`.
 
 | Metric | Target | Measured result | Status |
 | --- | ---: | ---: | --- |
@@ -125,8 +125,8 @@ Measured keyword results come from `evals/results/20261004T082551Z_keyword/`.
 | Exact accuracy | report | 66.7% | weak |
 | Macro F1 | report | 0.395 | weak |
 | Context movement strict accuracy | report | 80.0% | 1 missed expected change |
-| Abstention rate | report | 0.0% keyword / 100.0% LLM no-key | LLM not measured successfully |
-| Cost per 1,000 comments | report | USD 55.56 keyword, ASSUMED | verify prices |
+| Abstention rate | report | 0.0% keyword | No valid LLM run yet |
+| Cost per 1,000 comments | report | USD 10.11 keyword platform scenario, ASSUMED | verify prices and prevalence |
 
 The lazy all-high baseline gets 0.0% high/critical FNR but 100.0% normal-criticism FPR, which shows why both metrics must be reported together.
 

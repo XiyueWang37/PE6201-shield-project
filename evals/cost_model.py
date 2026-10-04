@@ -1,164 +1,74 @@
-"""Cost model for Shield moderation decisions.
+"""Platform-scale cost model for Shield moderation.
 
-The model reads measured evaluation outputs from `evals/results/`, applies
-ASSUMED token and human-review prices, and writes a reproducible cost report.
-All prices in CONFIG must be verified by the user against provider price pages
-before final submission.
+Formula from the course Class 5 frame:
+
+    cost per task = token_cost + (1 - p) * fallback_cost
+
+where p is the probability that the predicted policy action equals the gold
+policy action and the classifier does not abstain. Correct escalation of truly
+high-risk comments is a necessary review load, not a model failure.
 """
 
 from __future__ import annotations
 
 import csv
 import json
+from collections import defaultdict
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 RESULTS = ROOT / "evals" / "results"
+LATEST = ROOT / "evals" / "latest"
 OUT_DIR = RESULTS
+LABELS = ["normal", "low", "medium", "high", "critical"]
+GOLD_ACTION = {
+    "normal": "allow",
+    "low": "allow",
+    "medium": "prompt_reconsider",
+    "high": "escalate_to_moderator",
+    "critical": "escalate_to_moderator",
+}
 
 CONFIG = {
     "currency": "USD",
     "price_date": "2026-10-04",
     "price_source_note": "ASSUMED values for course prototype; verify against provider price pages before submission.",
     "models": {
-        "cheap_assumed": {"input_per_million": 0.15, "output_per_million": 0.60},
-        "frontier_assumed": {"input_per_million": 5.00, "output_per_million": 15.00},
+        "cheap_assumed": {
+            "model_id": "openai/gpt-4o-mini",
+            "input_per_million": 0.15,
+            "output_per_million": 0.60,
+        },
+        "frontier_assumed": {
+            "model_id": "user_selected_frontier_model",
+            "input_per_million": 5.00,
+            "output_per_million": 15.00,
+        },
+        "local_rules": {
+            "model_id": "keyword_local",
+            "input_per_million": 0.0,
+            "output_per_million": 0.0,
+        },
     },
     "manual_review_minutes": 2.0,
     "manual_reviewer_hourly_cost": 20.0,
     "monthly_comment_volume": 1_000_000,
-    "monthly_eval_runs": 4,
-    "monthly_eval_comments_per_run": 300,
-    "monthly_monitoring_fixed_cost": 100.0,
-    "monthly_engineer_fraction_cost": 500.0,
+    "platform_prevalence": {
+        "normal": 0.96,
+        "low": 0.00,
+        "medium": 0.03,
+        "high": 0.007,
+        "critical": 0.003,
+    },
+    "severe_prevalence_scenarios": [0.005, 0.01, 0.05],
+    "missed_severe_harm_cost": 0.0,
+    "missed_severe_harm_cost_note": "ASSUMED 0; severe-miss harm is reported as risk, not modelled in the main cost.",
 }
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
     with path.open(newline="", encoding="utf-8") as handle:
         return list(csv.DictReader(handle))
-
-
-def latest_result_dir(backend: str) -> Path:
-    matches = sorted(RESULTS.glob(f"*_{backend}"))
-    if not matches:
-        raise FileNotFoundError(f"No result directory found for backend {backend}")
-    return matches[-1]
-
-
-def load_backend_rows(backend: str) -> tuple[Path, list[dict[str, str]], dict[str, object]]:
-    result_dir = latest_result_dir(backend)
-    rows = read_csv(result_dir / "eval_cases.csv")
-    with (result_dir / "run_metadata.json").open(encoding="utf-8") as handle:
-        metadata = json.load(handle)
-    return result_dir, rows, metadata
-
-
-def mean(values: list[float]) -> float:
-    return sum(values) / len(values) if values else 0.0
-
-
-def backend_stats(backend: str) -> dict[str, float | str]:
-    result_dir, rows, metadata = load_backend_rows(backend)
-    input_tokens = [float(row.get("input_tokens") or 0) for row in rows]
-    output_tokens = [float(row.get("output_tokens") or 0) for row in rows]
-    escalated = [idx for idx, row in enumerate(rows) if row.get("policy_action") == "escalate_to_moderator"]
-    abstained = [idx for idx, row in enumerate(rows) if str(row.get("abstain", "")).lower() == "true"]
-    fallback_indices = set(escalated) | set(abstained)
-    fallback_rate = len(fallback_indices) / len(rows) if rows else 0.0
-    success_rate = 1.0 - fallback_rate
-    assert 0 <= success_rate <= 1
-    return {
-        "backend": backend,
-        "result_dir": str(result_dir.relative_to(ROOT)),
-        "n": float(len(rows)),
-        "avg_input_tokens": mean(input_tokens),
-        "avg_output_tokens": mean(output_tokens),
-        "escalate_rate": len(escalated) / len(rows) if rows else 0.0,
-        "abstention_rate": len(abstained) / len(rows) if rows else 0.0,
-        "fallback_rate": fallback_rate,
-        "success_rate": success_rate,
-    }
-
-
-def token_cost_per_comment(stats: dict[str, float | str], model: dict[str, float]) -> float:
-    assert model["input_per_million"] > 0
-    assert model["output_per_million"] > 0
-    return (
-        float(stats["avg_input_tokens"]) * model["input_per_million"] / 1_000_000
-        + float(stats["avg_output_tokens"]) * model["output_per_million"] / 1_000_000
-    )
-
-
-def manual_review_cost_per_comment(stats: dict[str, float | str]) -> float:
-    minutes = CONFIG["manual_review_minutes"]
-    hourly = CONFIG["manual_reviewer_hourly_cost"]
-    assert minutes >= 0 and hourly >= 0
-    per_review = minutes / 60 * hourly
-    return float(stats["fallback_rate"]) * per_review
-
-
-def fixed_monthly_cost() -> float:
-    monitoring = CONFIG["monthly_monitoring_fixed_cost"]
-    engineering = CONFIG["monthly_engineer_fraction_cost"]
-    assert monitoring >= 0 and engineering >= 0
-    return monitoring + engineering
-
-
-def scenario_rows() -> list[dict[str, object]]:
-    rows = []
-    for backend in ["keyword", "llm"]:
-        try:
-            stats = backend_stats(backend)
-        except FileNotFoundError:
-            continue
-        for model_name, model in CONFIG["models"].items():
-            token_cost = token_cost_per_comment(stats, model)
-            review_cost = manual_review_cost_per_comment(stats)
-            variable_cost = token_cost + review_cost
-            per_1000_comments = variable_cost * 1000
-            success_rate = float(stats["success_rate"])
-            per_1000_success = per_1000_comments / success_rate if success_rate > 0 else float("inf")
-            monthly = variable_cost * CONFIG["monthly_comment_volume"] + fixed_monthly_cost()
-            assert token_cost >= 0 and review_cost >= 0 and monthly >= 0
-            rows.append(
-                {
-                    "backend": backend,
-                    "model_tier": model_name,
-                    "currency": CONFIG["currency"],
-                    "avg_input_tokens": round(float(stats["avg_input_tokens"]), 3),
-                    "avg_output_tokens": round(float(stats["avg_output_tokens"]), 3),
-                    "success_rate": round(success_rate, 4),
-                    "escalate_rate": round(float(stats["escalate_rate"]), 4),
-                    "abstention_rate": round(float(stats["abstention_rate"]), 4),
-                    "token_cost_per_1000_comments": round(token_cost * 1000, 6),
-                    "expected_review_cost_per_1000_comments": round(review_cost * 1000, 6),
-                    "total_cost_per_1000_comments": round(per_1000_comments, 6),
-                    "total_cost_per_1000_successful_decisions": "inf" if per_1000_success == float("inf") else round(per_1000_success, 6),
-                    "monthly_cost_at_config_volume": round(monthly, 2),
-                    "source_result_dir": stats["result_dir"],
-                }
-            )
-    return rows
-
-
-def sensitivity_rows(base_rows: list[dict[str, object]]) -> list[dict[str, object]]:
-    rows = []
-    for row in base_rows:
-        total = float(row["total_cost_per_1000_comments"])
-        success = float(row["success_rate"])
-        for delta in [-0.10, 0.0, 0.10]:
-            adjusted = min(1.0, max(0.0, success + delta))
-            rows.append(
-                {
-                    "backend": row["backend"],
-                    "model_tier": row["model_tier"],
-                    "success_rate_adjustment": delta,
-                    "adjusted_success_rate": round(adjusted, 4),
-                    "cost_per_1000_successful_decisions": "inf" if adjusted == 0 else round(total / adjusted, 6),
-                }
-            )
-    return rows
 
 
 def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
@@ -169,47 +79,272 @@ def write_csv(path: Path, rows: list[dict[str, object]]) -> None:
         writer.writerows(rows)
 
 
-def write_report(rows: list[dict[str, object]], sensitivity: list[dict[str, object]]) -> None:
+def assert_config() -> None:
+    assert CONFIG["currency"] == "USD"
+    assert CONFIG["manual_review_minutes"] >= 0
+    assert CONFIG["manual_reviewer_hourly_cost"] >= 0
+    assert CONFIG["monthly_comment_volume"] > 0
+    prevalence_sum = sum(CONFIG["platform_prevalence"].values())
+    assert abs(prevalence_sum - 1.0) < 1e-9
+    for model in CONFIG["models"].values():
+        assert model["input_per_million"] >= 0
+        assert model["output_per_million"] >= 0
+
+
+def latest_metadata_paths(results_dir: Path = RESULTS) -> list[Path]:
+    paths = sorted(results_dir.glob("*_* /run_metadata.json"))
+    if not paths:
+        paths = sorted(results_dir.glob("*_*/*"))
+    return sorted(results_dir.glob("20*T*_* /run_metadata.json"))
+
+
+def find_run_metadata(results_dir: Path = RESULTS) -> list[Path]:
+    return sorted(path for path in results_dir.glob("20*T*_*/*") if path.name == "run_metadata.json")
+
+
+def latest_valid_run(backend: str, results_dir: Path = RESULTS) -> tuple[Path, dict[str, object]] | None:
+    candidates = []
+    for metadata_path in find_run_metadata(results_dir):
+        with metadata_path.open(encoding="utf-8") as handle:
+            metadata = json.load(handle)
+        if metadata.get("backend") == backend:
+            candidates.append((metadata_path.parent, metadata))
+    for result_dir, metadata in reversed(candidates):
+        if metadata.get("valid_run") is True:
+            return result_dir, metadata
+    return None
+
+
+def manual_review_cost() -> float:
+    return CONFIG["manual_review_minutes"] / 60 * CONFIG["manual_reviewer_hourly_cost"]
+
+
+def model_for_run(metadata: dict[str, object]) -> tuple[str, dict[str, object]]:
+    backend = metadata.get("backend")
+    if backend == "keyword":
+        return "local_rules", CONFIG["models"]["local_rules"]
+    model_id = str(metadata.get("model", ""))
+    tier = str(metadata.get("model_tier", ""))
+    if tier in CONFIG["models"] and CONFIG["models"][tier]["model_id"] == model_id:
+        return tier, CONFIG["models"][tier]
+    for candidate_tier, model in CONFIG["models"].items():
+        if model["model_id"] == model_id:
+            return candidate_tier, model
+    raise ValueError(f"No CONFIG model tier matches measured model: {model_id}")
+
+
+def validate_run(metadata: dict[str, object]) -> None:
+    if metadata.get("valid_run") is not True:
+        raise ValueError("Cost model refuses valid_run=false results")
+    backend = metadata.get("backend")
+    token_source = metadata.get("token_source")
+    if backend == "keyword":
+        if token_source != "local_no_tokens":
+            raise ValueError("Keyword token source must be local_no_tokens")
+    elif token_source != "provider_usage":
+        raise ValueError("LLM cost requires provider_usage tokens, not estimated or missing tokens")
+
+
+
+def relative_result_dir(result_dir: Path) -> str:
+    try:
+        return str(result_dir.resolve().relative_to(ROOT))
+    except ValueError:
+        return str(result_dir)
+
+def measured_rates(rows: list[dict[str, str]]) -> dict[str, dict[str, float]]:
+    by_label: dict[str, list[dict[str, str]]] = defaultdict(list)
+    for row in rows:
+        by_label[row["true_label"]].append(row)
+    rates: dict[str, dict[str, float]] = {}
+    for label in LABELS:
+        subset = by_label.get(label, [])
+        n = len(subset)
+        if not n:
+            rates[label] = {
+                "n": 0,
+                "p": 0.0,
+                "necessary_review_load": 0.0,
+                "false_positive_escalation": 0.0,
+                "false_negative": 0.0,
+                "avg_input_tokens": 0.0,
+                "avg_output_tokens": 0.0,
+            }
+            continue
+        gold = GOLD_ACTION[label]
+        action_correct = [row for row in subset if row.get("action_correct") == "True" or row.get("action_correct") == "true"]
+        necessary = [row for row in subset if gold == "escalate_to_moderator" and row.get("policy_action") == "escalate_to_moderator" and row in action_correct]
+        false_positive_escalation = [row for row in subset if gold != "escalate_to_moderator" and row.get("policy_action") == "escalate_to_moderator"]
+        false_negative = [row for row in subset if gold == "escalate_to_moderator" and row.get("policy_action") != "escalate_to_moderator"]
+        rates[label] = {
+            "n": n,
+            "p": len(action_correct) / n,
+            "necessary_review_load": len(necessary) / n,
+            "false_positive_escalation": len(false_positive_escalation) / n,
+            "false_negative": len(false_negative) / n,
+            "avg_input_tokens": sum(float(row.get("input_tokens") or 0) for row in subset) / n,
+            "avg_output_tokens": sum(float(row.get("output_tokens") or 0) for row in subset) / n,
+        }
+    return rates
+
+
+def reweighted_value(rates: dict[str, dict[str, float]], prevalence: dict[str, float], field: str) -> float:
+    return sum(prevalence[label] * rates[label][field] for label in LABELS)
+
+
+def token_cost(avg_input: float, avg_output: float, model: dict[str, object]) -> float:
+    cost = avg_input * float(model["input_per_million"]) / 1_000_000 + avg_output * float(model["output_per_million"]) / 1_000_000
+    assert cost >= 0
+    return cost
+
+
+def scenario_for_prevalence(backend: str, result_dir: Path, metadata: dict[str, object], rows: list[dict[str, str]], prevalence_name: str, prevalence: dict[str, float]) -> dict[str, object]:
+    validate_run(metadata)
+    tier, model = model_for_run(metadata)
+    rates = measured_rates(rows)
+    p = reweighted_value(rates, prevalence, "p")
+    assert 0 <= p <= 1
+    avg_input = reweighted_value(rates, prevalence, "avg_input_tokens")
+    avg_output = reweighted_value(rates, prevalence, "avg_output_tokens")
+    per_task_token = token_cost(avg_input, avg_output, model)
+    fallback = manual_review_cost()
+    fallback_component = (1 - p) * fallback
+    total = per_task_token + fallback_component
+    assert total >= 0
+    necessary_review = reweighted_value(rates, prevalence, "necessary_review_load") * 1000
+    false_positive = reweighted_value(rates, prevalence, "false_positive_escalation")
+    false_negative = reweighted_value(rates, prevalence, "false_negative")
+    return {
+        "backend": backend,
+        "model_tier": tier,
+        "model_id": model["model_id"],
+        "prevalence_scenario": prevalence_name,
+        "currency": CONFIG["currency"],
+        "p_action_success": round(p, 6),
+        "avg_input_tokens": round(avg_input, 3),
+        "avg_output_tokens": round(avg_output, 3),
+        "token_cost_per_1000_comments": round(per_task_token * 1000, 6),
+        "expected_fallback_cost_per_1000_comments": round(fallback_component * 1000, 6),
+        "total_cost_per_1000_comments": round(total * 1000, 6),
+        "total_cost_per_1000_successful_decisions": "inf" if p == 0 else round((total * 1000) / p, 6),
+        "necessary_review_load_per_1000": round(necessary_review, 3),
+        "false_positive_escalation_rate": round(false_positive, 6),
+        "false_negative_rate": round(false_negative, 6),
+        "missed_severe_harm_cost_modelled": CONFIG["missed_severe_harm_cost"],
+        "monthly_cost_at_config_volume": round(total * CONFIG["monthly_comment_volume"], 2),
+        "source_result_dir": relative_result_dir(result_dir),
+    }
+
+
+def prevalence_with_severe(severe_rate: float) -> dict[str, float]:
+    medium = CONFIG["platform_prevalence"]["medium"]
+    high = severe_rate * 0.7
+    critical = severe_rate * 0.3
+    normal = 1 - medium - high - critical
+    return {"normal": normal, "low": 0.0, "medium": medium, "high": high, "critical": critical}
+
+
+def build_rows(results_dir: Path = RESULTS) -> list[dict[str, object]]:
+    rows: list[dict[str, object]] = []
+    for backend in ["keyword", "llm"]:
+        selected = latest_valid_run(backend, results_dir)
+        if not selected:
+            continue
+        result_dir, metadata = selected
+        eval_rows = read_csv(result_dir / "eval_cases.csv")
+        rows.append(scenario_for_prevalence(backend, result_dir, metadata, eval_rows, "platform_assumed", CONFIG["platform_prevalence"]))
+        observed_counts = defaultdict(int)
+        for row in eval_rows:
+            observed_counts[row["true_label"]] += 1
+        observed_total = sum(observed_counts.values())
+        observed = {label: observed_counts[label] / observed_total for label in LABELS}
+        rows.append(scenario_for_prevalence(backend, result_dir, metadata, eval_rows, "eval_observed_reference_only", observed))
+    return rows
+
+
+def build_sensitivity(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    out: list[dict[str, object]] = []
+    fallback = manual_review_cost()
+    for row in rows:
+        if row["prevalence_scenario"] != "platform_assumed":
+            continue
+        token_per_1000 = float(row["token_cost_per_1000_comments"])
+        p = float(row["p_action_success"])
+        for delta in [-0.10, 0.0, 0.10]:
+            adjusted = min(1.0, max(0.0, p + delta))
+            total = token_per_1000 + (1 - adjusted) * fallback * 1000
+            out.append({"backend": row["backend"], "model_tier": row["model_tier"], "scenario": "p_delta", "value": delta, "adjusted_p": round(adjusted, 6), "total_cost_per_1000_comments": round(total, 6)})
+    return out
+
+
+def build_prevalence_sensitivity(results_dir: Path = RESULTS) -> list[dict[str, object]]:
+    out: list[dict[str, object]] = []
+    for backend in ["keyword", "llm"]:
+        selected = latest_valid_run(backend, results_dir)
+        if not selected:
+            continue
+        result_dir, metadata = selected
+        eval_rows = read_csv(result_dir / "eval_cases.csv")
+        for severe_rate in CONFIG["severe_prevalence_scenarios"]:
+            scenario = scenario_for_prevalence(backend, result_dir, metadata, eval_rows, f"severe_{severe_rate:.3f}", prevalence_with_severe(severe_rate))
+            out.append({"backend": backend, "model_tier": scenario["model_tier"], "severe_prevalence": severe_rate, "p_action_success": scenario["p_action_success"], "total_cost_per_1000_comments": scenario["total_cost_per_1000_comments"], "necessary_review_load_per_1000": scenario["necessary_review_load_per_1000"]})
+    return out
+
+
+def break_even(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    cheap = next((r for r in rows if r["model_tier"] == "cheap_assumed" and r["prevalence_scenario"] == "platform_assumed"), None)
+    frontier = next((r for r in rows if r["model_tier"] == "frontier_assumed" and r["prevalence_scenario"] == "platform_assumed"), None)
+    if not cheap or not frontier:
+        return []
+    fallback = manual_review_cost()
+    cheap_total_per_task = float(cheap["total_cost_per_1000_comments"]) / 1000
+    frontier_token_per_task = float(frontier["token_cost_per_1000_comments"]) / 1000
+    p_star = 1 - (cheap_total_per_task - frontier_token_per_task) / fallback if fallback else 1.0
+    return [{"baseline": "cheap_assumed", "candidate": "frontier_assumed", "required_frontier_p": round(p_star, 6), "observed_frontier_p": frontier["p_action_success"], "conclusion": "frontier beats cheap" if float(frontier["p_action_success"]) >= p_star else "frontier does not beat cheap under ASSUMED prices"}]
+
+
+def write_report(rows: list[dict[str, object]], break_even_rows: list[dict[str, object]]) -> None:
     lines = [
         "# Shield Cost Report",
         "",
         f"Currency: {CONFIG['currency']}",
         f"Price date: {CONFIG['price_date']}",
         f"Price source note: {CONFIG['price_source_note']}",
+        f"Missed severe harm cost: {CONFIG['missed_severe_harm_cost_note']}",
         "",
-        "All model prices and human-review costs are ASSUMED and must be verified by the user against provider price pages before submission.",
+        "All prices, review time, review wages, monthly volume, prevalence, and harm-cost values are ASSUMED and must be verified before submission.",
         "",
         "## Scenario Results",
         "",
-        "| Backend | Model tier | Cost / 1,000 comments | Cost / 1,000 successful decisions | Monthly cost | Success rate | Escalate rate | Abstention rate |",
-        "| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
+        "| Backend | Model tier | Prevalence | p | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | FN rate |",
+        "| --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |",
     ]
     for row in rows:
-        lines.append(
-            f"| {row['backend']} | {row['model_tier']} | {row['total_cost_per_1000_comments']} | "
-            f"{row['total_cost_per_1000_successful_decisions']} | {row['monthly_cost_at_config_volume']} | "
-            f"{row['success_rate']} | {row['escalate_rate']} | {row['abstention_rate']} |"
-        )
-    lines += [
-        "",
-        "## Break-even Note",
-        "",
-        "The cheap and frontier token tiers have the same observed success rate within a backend unless real LLM measurements are added. Break-even therefore depends on the frontier model improving success enough to offset its higher token price and any reduction in human review fallback.",
-        "",
-        "## Sensitivity",
-        "",
-        "See `cost_sensitivity.csv` for success-rate +/-10 percentage point scenarios.",
-    ]
+        lines.append(f"| {row['backend']} | {row['model_tier']} | {row['prevalence_scenario']} | {row['p_action_success']} | {row['token_cost_per_1000_comments']} | {row['expected_fallback_cost_per_1000_comments']} | {row['total_cost_per_1000_comments']} | {row['necessary_review_load_per_1000']} | {row['false_negative_rate']} |")
+    lines += ["", "## Break-even", ""]
+    if break_even_rows:
+        for row in break_even_rows:
+            lines.append(f"Frontier required p*: {row['required_frontier_p']}; observed frontier p: {row['observed_frontier_p']}; conclusion: {row['conclusion']}.")
+    else:
+        lines.append("Break-even was not computed because valid cheap and frontier LLM runs are not both available.")
+    lines += ["", "See `cost_sensitivity.csv` and `cost_prevalence_sensitivity.csv` for sensitivity tables."]
     (OUT_DIR / "cost_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
 
 def main() -> None:
-    assert CONFIG["currency"] == "USD"
-    rows = scenario_rows()
+    assert_config()
+    rows = build_rows()
+    if not rows:
+        raise SystemExit("No valid result runs found for cost modelling.")
     write_csv(OUT_DIR / "cost_report.csv", rows)
-    sensitivity = sensitivity_rows(rows)
-    write_csv(OUT_DIR / "cost_sensitivity.csv", sensitivity)
-    write_report(rows, sensitivity)
+    write_csv(OUT_DIR / "cost_sensitivity.csv", build_sensitivity(rows))
+    prevalence_rows = build_prevalence_sensitivity()
+    if prevalence_rows:
+        write_csv(OUT_DIR / "cost_prevalence_sensitivity.csv", prevalence_rows)
+    be_rows = break_even(rows)
+    if be_rows:
+        write_csv(OUT_DIR / "cost_break_even.csv", be_rows)
+    write_report(rows, be_rows)
     print(f"Wrote {OUT_DIR / 'cost_report.md'}")
 
 

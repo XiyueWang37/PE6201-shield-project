@@ -19,6 +19,7 @@ class ShieldResult:
     input_tokens: int = 0
     output_tokens: int = 0
     abstain: bool = False
+    error_type: str = ""
 
 
 HIGH_RISK_TERMS = {

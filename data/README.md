@@ -21,6 +21,8 @@ The mapping used in `public_jigsaw_sample_300.csv` is visible in the `jigsaw_*` 
 
 These mapped labels are not human severity judgements. They are a mechanical bridge from Jigsaw's label schema into Shield's taxonomy and should be reported separately from the core hand-labelled eval.
 
+In the current 300-row supplement, the mechanically mapped `high` bucket contains 50 rows. Only 11 of those rows have `jigsaw_threat=1`; the remaining 39 are high because of `severe_toxic` without an explicit threat flag. The evaluation runner therefore reports two extra slices: `jigsaw_threat_flagged` FNR and `jigsaw_profanity_only_high` upgrade rate. This prevents the coarse high bucket from overstating evidence about true threat detection.
+
 ## Human Review Plan
 
 The file `candidates_to_label.csv` contains AI-drafted examples covering normal criticism, non-targeted profanity, sarcasm, implicit threats, location or routine intimidation, and multi-comment context cases. A human reviewer should fill `shield_label`, then any accepted rows can be merged into a larger core set with `labeller=human_reviewed`.

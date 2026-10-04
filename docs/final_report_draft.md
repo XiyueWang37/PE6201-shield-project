@@ -20,7 +20,7 @@ The evaluation script reports severe false-negative rate, normal-criticism false
 
 ## 4. Results and Critique
 
-All current metric numbers come from `evals/results/20261004T082551Z_keyword/`. On the core set, the keyword fallback has 66.7% exact accuracy and macro F1 of 0.395. It passes the normal-criticism false-positive target on the tiny sample: 0 of 4 normal criticism cases were prompted or escalated, for 0.0% FPR. However, it fails the safety target badly: 3 of 4 high or critical cases were not escalated, for 75.0% FNR. The 95% confidence intervals are wide because the sample is tiny.
+All current metric numbers come from `evals/latest/keyword_metrics_summary.csv` and the latest valid keyword run under `evals/results/`. On the core set, the keyword fallback has 66.7% exact accuracy and macro F1 of 0.395. It passes the normal-criticism false-positive target on the tiny sample: 0 of 4 normal criticism cases were prompted or escalated, for 0.0% FPR. However, it fails the safety target badly: 3 of 4 high or critical cases were not escalated, for 75.0% FNR. The 95% confidence intervals are wide because the sample is tiny.
 
 The lazy all-high baseline demonstrates why paired metrics matter. It achieves 0.0% FNR on high/critical cases, but 100.0% FPR on normal criticism. That would be a bad product because every ordinary criticism would be escalated. Shield should therefore be judged on both user protection and user friction.
 
@@ -30,7 +30,7 @@ The supplementary 300-row public Jigsaw eval is also weak: 38.7% exact label acc
 
 ## 5. Cost and Class 5 Coverage
 
-The cost model in `evals/results/cost_report.md` uses measured evaluation actions and ASSUMED prices. Under those assumptions, the keyword backend costs about USD 55.56 per 1,000 comments after expected human-review fallback. The LLM no-key path costs about USD 666.70 per 1,000 comments because every case abstains and escalates. These prices must be verified against provider price pages, but the exercise adds the missing platform-scale question: moderation quality must be weighed against cost per 1,000 comments and human review fallback.
+The cost model in `evals/results/cost_report.md` now uses action correctness and ASSUMED platform prevalence instead of treating every escalation as failure. Under those assumptions, the keyword backend costs about USD 10.11 per 1,000 comments, with USD 0.00 token cost and USD 10.11 expected fallback cost. The 12-row evaluation prevalence is only a reference scenario and gives USD 222.22 per 1,000 because one third of that small set is high-risk. No LLM cost is reported until a valid LLM run exists. These prices and prevalence assumptions must be verified against provider price pages and course expectations.
 
 ## 6. Limitations and Future Path
 

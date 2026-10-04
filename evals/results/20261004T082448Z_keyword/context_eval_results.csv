@@ -1,6 +1,0 @@
-id,preceding_context,final_comment,legacy_handwritten_label_without_context,legacy_handwritten_label_with_context,expected_movement,label_without_context,label_with_context,movement_observed,strict_correct,lenient_correct,missed_expected_change,backend
-1,User A: Stop messaging me. User B: I know where you usually go after class.,I will see you again.,normal,high,escalate,normal,medium,escalate,True,True,False,keyword
-2,User A: Please stop commenting on my posts. User B: I will not leave you alone.,Again tomorrow.,normal,medium,escalate,normal,medium,escalate,True,True,False,keyword
-3,User A: Your analysis has several errors. User B: Which part do you disagree with?,This is still not convincing.,normal,normal,no_change,normal,normal,no_change,True,True,False,keyword
-4,User A: Stop following me. User B: I saw your bus stop yesterday.,See you soon.,normal,high,escalate,normal,normal,no_change,False,False,True,keyword
-5,User A: I do not want to talk. User B: Everyone should ignore you.,Nobody wants you here anyway.,medium,medium,no_change,normal,normal,no_change,True,True,False,keyword

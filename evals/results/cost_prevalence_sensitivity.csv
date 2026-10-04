@@ -1,0 +1,4 @@
+backend,model_tier,severe_prevalence,p_action_success,total_cost_per_1000_comments,necessary_review_load_per_1000
+keyword,local_rules,0.005,0.988667,7.555556,1.167
+keyword,local_rules,0.01,0.984833,10.111111,2.333
+keyword,local_rules,0.05,0.954167,30.555556,11.667

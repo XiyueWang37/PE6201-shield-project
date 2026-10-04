@@ -1,0 +1,13 @@
+id,source,comment,context,true_label,gold_action,predicted_label,policy_action,action_correct,confidence,is_normal_criticism,is_high_or_critical,hard_case_type,tuned_on,correct,abstain,error_type,input_tokens,output_tokens,rationale
+1,manual,I disagree with your conclusion because the evidence is weak.,,normal,allow,normal,allow,True,low,true,false,,true,True,False,,0,0,No clear harassment signal was detected in this prototype pass.
+2,manual,This proposal ignores the cost problem.,,normal,allow,normal,allow,True,low,true,false,,true,True,False,,0,0,No clear harassment signal was detected in this prototype pass.
+3,manual,Your argument is not convincing.,,normal,allow,normal,allow,True,low,true,false,,true,True,False,,0,0,No clear harassment signal was detected in this prototype pass.
+4,manual,The design is confusing and should be improved.,,normal,allow,normal,allow,True,low,true,false,,true,True,False,,0,0,No clear harassment signal was detected in this prototype pass.
+5,manual,You are such an idiot and should shut up.,,medium,prompt_reconsider,medium,prompt_reconsider,True,medium,false,false,,true,True,False,,0,0,The text contains direct insulting or hostile language.
+6,manual,Nobody wants you here.,,medium,prompt_reconsider,normal,allow,False,low,false,false,,true,False,False,,0,0,No clear harassment signal was detected in this prototype pass.
+7,manual,You are worthless.,,medium,prompt_reconsider,medium,prompt_reconsider,True,medium,false,false,,true,True,False,,0,0,The text contains direct insulting or hostile language.
+8,manual,I will find you after class.,,high,escalate_to_moderator,normal,allow,False,low,false,true,,true,False,False,,0,0,No clear harassment signal was detected in this prototype pass.
+9,manual,You deserve to be hurt.,,high,escalate_to_moderator,high,escalate_to_moderator,True,medium,false,true,,true,True,False,,0,0,The text contains language associated with threats or severe harassment.
+10,manual,I know where you live.,,critical,escalate_to_moderator,normal,allow,False,low,false,true,,true,False,False,,0,0,No clear harassment signal was detected in this prototype pass.
+11,synthetic_context,I will see you again.,User A: Stop messaging me. User B: I know where you usually go after class.,high,escalate_to_moderator,medium,prompt_reconsider,False,low,false,true,,true,False,False,,0,0,The final comment is ambiguous alone but may continue a hostile pattern in context.
+12,synthetic_context,Again tomorrow.,User A: Please stop commenting on my posts. User B: I will not leave you alone.,medium,prompt_reconsider,medium,prompt_reconsider,True,low,false,false,,true,True,False,,0,0,The final comment is ambiguous alone but may continue a hostile pattern in context.

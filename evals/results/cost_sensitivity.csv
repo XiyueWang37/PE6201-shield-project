@@ -1,13 +1,4 @@
-backend,model_tier,success_rate_adjustment,adjusted_success_rate,cost_per_1000_successful_decisions
-keyword,cheap_assumed,-0.1,0.8167,68.024435
-keyword,cheap_assumed,0.0,0.9167,60.603857
-keyword,cheap_assumed,0.1,1.0,55.555556
-keyword,frontier_assumed,-0.1,0.8167,68.024435
-keyword,frontier_assumed,0.0,0.9167,60.603857
-keyword,frontier_assumed,0.1,1.0,55.555556
-llm,cheap_assumed,-0.1,0.0,inf
-llm,cheap_assumed,0.0,0.0,inf
-llm,cheap_assumed,0.1,0.1,6666.97904
-llm,frontier_assumed,-0.1,0.0,inf
-llm,frontier_assumed,0.0,0.0,inf
-llm,frontier_assumed,0.1,0.1,6677.07917
+backend,model_tier,scenario,value,adjusted_p,total_cost_per_1000_comments
+keyword,local_rules,p_delta,-0.1,0.884833,76.778
+keyword,local_rules,p_delta,0.0,0.984833,10.111333
+keyword,local_rules,p_delta,0.1,1.0,0.0

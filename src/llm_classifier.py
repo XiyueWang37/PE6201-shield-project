@@ -1,9 +1,9 @@
 """LLM-backed Shield severity classifier.
 
-This module provides the same `classify_comment(comment, context="")` surface
-as the keyword fallback, but routes the classification through a hosted chat
-model. It reads credentials only from `SHIELD_API_KEY`, caches responses under
-`evals/cache/`, and returns abstention metadata for evaluation scripts.
+The module keeps the same `classify_comment(comment, context="")` surface as the
+local keyword fallback. Cached responses are checked before credentials are
+required, so a committed cache can be replayed by a marker without an API key.
+New uncached calls require `SHIELD_API_KEY` and record provider usage tokens.
 """
 
 from __future__ import annotations
@@ -18,18 +18,23 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
-from policy import action_for_severity, log_decision
+from policy import action_for_severity
 from shield_classifier import ShieldResult
 
+ROOT = Path(__file__).resolve().parents[1]
+PROMPT_VERSION = os.getenv("SHIELD_PROMPT_VERSION", "prompt_v1")
 CONFIG = {
     "BACKEND": os.getenv("SHIELD_LLM_BACKEND", "openai_compatible"),
     "MODEL": os.getenv("SHIELD_LLM_MODEL", "openai/gpt-4o-mini"),
+    "MODEL_TIER": os.getenv("SHIELD_MODEL_TIER", "cheap_assumed"),
     "BASE_URL": os.getenv("SHIELD_LLM_BASE_URL", "https://openrouter.ai/api/v1/chat/completions"),
-    "CACHE_PATH": "evals/cache/llm_responses.jsonl",
+    "CACHE_PATH": os.getenv("SHIELD_LLM_CACHE_PATH", str(ROOT / "evals" / "cache" / "llm_responses.jsonl")),
     "TEMPERATURE": 0,
     "MAX_TOKENS": 220,
     "TIMEOUT_SECONDS": 45,
     "MAX_RETRIES": 2,
+    "ASSUMED_INPUT_PER_MILLION_USD": 0.15,
+    "ASSUMED_OUTPUT_PER_MILLION_USD": 0.60,
 }
 
 VALID_SEVERITIES = {"normal", "low", "medium", "high", "critical"}
@@ -42,11 +47,13 @@ class LLMRawResponse:
     content: str
     input_tokens: int = 0
     output_tokens: int = 0
+    from_cache: bool = False
 
 
 def build_prompt(comment: str, context: str = "") -> list[dict[str, str]]:
     """Build a deterministic JSON-only harassment classification prompt."""
     system = (
+        f"Prompt version: {PROMPT_VERSION}.\n"
         "You classify social media harassment severity. Use exactly one label:\n"
         "- normal: ordinary disagreement, criticism, or neutral text.\n"
         "- low: rude or mildly hostile, but not targeted harassment.\n"
@@ -73,30 +80,36 @@ def build_prompt(comment: str, context: str = "") -> list[dict[str, str]]:
 
 
 def estimate_tokens_for_messages(messages: list[dict[str, str]]) -> int:
-    """Estimate tokens before an API call using a conservative character ratio."""
     chars = sum(len(message["content"]) for message in messages)
     return max(1, (chars + 3) // 4)
 
 
 def estimate_cost_usd(input_tokens: int, output_tokens: int) -> float:
-    """Return an assumed low-cost estimate for pre-call safety printing.
-
-    ASSUMED prices, pending user verification against the provider price page:
-    USD 0.15 / 1M input tokens and USD 0.60 / 1M output tokens.
-    """
-    return (input_tokens * 0.15 / 1_000_000) + (output_tokens * 0.60 / 1_000_000)
+    return (
+        input_tokens * float(CONFIG["ASSUMED_INPUT_PER_MILLION_USD"]) / 1_000_000
+        + output_tokens * float(CONFIG["ASSUMED_OUTPUT_PER_MILLION_USD"]) / 1_000_000
+    )
 
 
 def _cache_key(model: str, messages: list[dict[str, str]]) -> str:
-    raw = json.dumps({"model": model, "messages": messages}, sort_keys=True, ensure_ascii=False)
+    raw = json.dumps(
+        {"model": model, "prompt_version": PROMPT_VERSION, "messages": messages},
+        sort_keys=True,
+        ensure_ascii=False,
+    )
     return hashlib.sha256(raw.encode("utf-8")).hexdigest()
 
 
-def _load_cache(path: Path) -> dict[str, dict[str, Any]]:
-    if not path.exists():
+def cache_path() -> Path:
+    return Path(str(CONFIG["CACHE_PATH"]))
+
+
+def _load_cache(path: Path | None = None) -> dict[str, dict[str, Any]]:
+    target = path or cache_path()
+    if not target.exists():
         return {}
     cache: dict[str, dict[str, Any]] = {}
-    with path.open("r", encoding="utf-8") as handle:
+    with target.open("r", encoding="utf-8") as handle:
         for line in handle:
             if not line.strip():
                 continue
@@ -109,6 +122,39 @@ def _append_cache(path: Path, record: dict[str, Any]) -> None:
     path.parent.mkdir(parents=True, exist_ok=True)
     with path.open("a", encoding="utf-8") as handle:
         handle.write(json.dumps(record, ensure_ascii=True) + "\n")
+
+
+def request_key(comment: str, context: str = "") -> str:
+    return _cache_key(str(CONFIG["MODEL"]), build_prompt(comment, context))
+
+
+def has_cached_response(comment: str, context: str = "") -> bool:
+    return request_key(comment, context) in _load_cache()
+
+
+def preflight_for_rows(rows: list[dict[str, str]], comment_field: str = "comment", context_field: str = "context") -> dict[str, object]:
+    total_input = 0
+    total_output = 0
+    cache = _load_cache()
+    missing_cache = 0
+    for row in rows:
+        messages = build_prompt(row[comment_field], row.get(context_field, ""))
+        total_input += estimate_tokens_for_messages(messages)
+        total_output += int(CONFIG["MAX_TOKENS"])
+        if _cache_key(str(CONFIG["MODEL"]), messages) not in cache:
+            missing_cache += 1
+    return {
+        "model": CONFIG["MODEL"],
+        "model_tier": CONFIG["MODEL_TIER"],
+        "base_url": CONFIG["BASE_URL"],
+        "prompt_version": PROMPT_VERSION,
+        "call_count": len(rows),
+        "estimated_input_tokens": total_input,
+        "estimated_output_tokens": total_output,
+        "estimated_cost_usd": estimate_cost_usd(total_input, total_output),
+        "missing_cache_count": missing_cache,
+        "has_api_key": bool(os.getenv("SHIELD_API_KEY")),
+    }
 
 
 def call_provider(messages: list[dict[str, str]]) -> LLMRawResponse:
@@ -162,18 +208,17 @@ def _parse_json_response(content: str) -> dict[str, Any]:
     }
 
 
-def _abstain_result(comment: str, context: str, reason: str, input_tokens: int = 0) -> ShieldResult:
+def _abstain_result(reason: str, input_tokens: int = 0, error_type: str = "model_abstain") -> ShieldResult:
     severity = "abstain"
-    action = action_for_severity(severity)
-    log_decision(comment, context, severity, action, backend="llm")
     return ShieldResult(
         severity=severity,
         rationale=reason,
         confidence="low",
-        policy_action=action,
+        policy_action=action_for_severity(severity),
         input_tokens=input_tokens,
         output_tokens=0,
         abstain=True,
+        error_type=error_type,
     )
 
 
@@ -181,35 +226,29 @@ def classify_comment(comment: str, context: str = "") -> ShieldResult:
     """Classify a comment through the configured LLM backend."""
     messages = build_prompt(comment, context)
     estimated_input = estimate_tokens_for_messages(messages)
-    estimated_cost = estimate_cost_usd(estimated_input, int(CONFIG["MAX_TOKENS"]))
-    print(
-        "LLM preflight: "
-        f"estimated_input_tokens={estimated_input}, "
-        f"max_output_tokens={CONFIG['MAX_TOKENS']}, "
-        f"estimated_cost_usd={estimated_cost:.6f}"
-    )
-    if estimated_cost > 2:
-        return _abstain_result(comment, context, "Estimated API cost exceeds USD 2.", estimated_input)
-
-    cache_path = Path(str(CONFIG["CACHE_PATH"]))
     key = _cache_key(str(CONFIG["MODEL"]), messages)
-    cache = _load_cache(cache_path)
+    cache = _load_cache()
     if key in cache:
         cached = cache[key]
         raw = LLMRawResponse(
             content=str(cached["content"]),
             input_tokens=int(cached.get("input_tokens", 0)),
             output_tokens=int(cached.get("output_tokens", 0)),
+            from_cache=True,
         )
     else:
+        estimated_cost = estimate_cost_usd(estimated_input, int(CONFIG["MAX_TOKENS"]))
+        if estimated_cost > 2:
+            return _abstain_result("Estimated API cost exceeds USD 2.", estimated_input, "api_error")
         for attempt in range(int(CONFIG["MAX_RETRIES"]) + 1):
             try:
                 raw = call_provider(messages)
                 _append_cache(
-                    cache_path,
+                    cache_path(),
                     {
                         "key": key,
                         "model": CONFIG["MODEL"],
+                        "prompt_version": PROMPT_VERSION,
                         "content": raw.content,
                         "input_tokens": raw.input_tokens,
                         "output_tokens": raw.output_tokens,
@@ -218,23 +257,23 @@ def classify_comment(comment: str, context: str = "") -> ShieldResult:
                 break
             except (RuntimeError, urllib.error.URLError, KeyError, json.JSONDecodeError, TimeoutError) as exc:
                 if attempt >= int(CONFIG["MAX_RETRIES"]):
-                    return _abstain_result(comment, context, f"LLM call failed: {exc}", estimated_input)
+                    return _abstain_result(f"LLM call failed: {exc}", estimated_input, "api_error")
                 time.sleep(1)
 
     try:
         parsed = _parse_json_response(raw.content)
     except (ValueError, json.JSONDecodeError) as exc:
-        return _abstain_result(comment, context, f"LLM response parsing failed: {exc}", raw.input_tokens)
+        return _abstain_result(f"LLM response parsing failed: {exc}", raw.input_tokens, "api_error")
 
-    severity = "abstain" if parsed["abstain"] else parsed["severity"]
-    action = action_for_severity(severity)
-    log_decision(comment, context, severity, action, backend="llm")
+    if parsed["abstain"]:
+        return _abstain_result(parsed["rationale"], raw.input_tokens, "model_abstain")
+    severity = parsed["severity"]
     return ShieldResult(
         severity=severity,
         rationale=parsed["rationale"],
         confidence=parsed["confidence"],
-        policy_action=action,
+        policy_action=action_for_severity(severity),
         input_tokens=raw.input_tokens,
         output_tokens=raw.output_tokens,
-        abstain=bool(parsed["abstain"]),
+        abstain=False,
     )

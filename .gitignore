@@ -5,5 +5,4 @@ __pycache__/
 .env
 *.log
 
-evals/cache/
 evals/logs/
