@@ -54,15 +54,17 @@ src/
   run_demo.py            # Command line demo
 data/
   README.md              # Data source and relabelling explanation
-  relabelled_150_template.csv
+  relabelled_eval_set.csv # Hand-labelled prototype evaluation set
 evals/
   README.md              # Evaluation design and metrics
-  eval_cases_template.csv
-  context_eval_cases_template.csv
-  metrics_summary_template.csv
+  eval_cases.csv          # Single-comment eval results
+  context_eval_cases.csv  # Context sensitivity eval cases
+  metrics_summary.csv     # Metrics target and result summary
 docs/
   architecture.md
   metrics_summary.md
+  final_report_draft.md
+  final_report.pdf
 demo/
   demo_script.md
 ```
@@ -87,7 +89,7 @@ python src/run_demo.py
 
 ## Run Evals
 
-The current repository includes templates for the final evaluation files. Fill them with the actual 150 relabelled items and context cases, then compute:
+The current repository includes a small prototype evaluation set and metric summary. The intended full version is 150 hand-relabelled items; this submission keeps the smaller set inspectable and transparent:
 
 - False negative rate on high and critical harassment.
 - False positive or over-prompt rate on normal criticism.

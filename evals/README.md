@@ -22,6 +22,6 @@ Shield is evaluated as a product intervention, not only as a classifier. The key
 
 ## Files
 
-- `eval_cases_template.csv`: single-comment evaluation cases.
-- `context_eval_cases_template.csv`: context movement cases.
-- `metrics_summary_template.csv`: target and result summary.
+- `eval_cases.csv`: single-comment evaluation cases and prototype predictions.
+- `context_eval_cases.csv`: context movement cases.
+- `metrics_summary.csv`: target and result summary.

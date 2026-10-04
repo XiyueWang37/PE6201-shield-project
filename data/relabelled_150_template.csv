@@ -1,2 +1,0 @@
-id,source_dataset,comment,context,shield_label,is_normal_criticism,is_high_or_critical,notes
-1,manual_or_public_source,"I disagree with your argument because the evidence is incomplete.","",normal,true,false,"Normal criticism example"

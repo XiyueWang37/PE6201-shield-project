@@ -16,6 +16,6 @@ The original project statement considered several public datasets. The final sub
 
 ## Files
 
-- `relabelled_150_template.csv`: template for the 150 hand-relabelled items.
+- `relabelled_eval_set.csv`: hand-labelled prototype evaluation set used for the reported metrics. The intended full version is 150 relabelled items.
 
 Do not include private platform data or API keys in this folder.
