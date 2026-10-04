@@ -58,9 +58,11 @@ data/
   public_jigsaw_sample_300.csv # Supplementary public Jigsaw sample
 evals/
   README.md              # Evaluation design and metrics
-  eval_cases.csv          # Single-comment eval results
-  context_eval_cases.csv  # Context sensitivity eval cases
-  metrics_summary.csv     # Metrics target and result summary
+  eval_cases.csv             # Small hand-labelled eval results
+  context_eval_cases.csv     # Context sensitivity eval cases
+  metrics_summary.csv        # Core metrics target and result summary
+  public_jigsaw_eval_300.csv # Supplementary public Jigsaw eval results
+  public_jigsaw_metrics_300.csv # Supplementary public Jigsaw metrics
 docs/
   architecture.md
   metrics_summary.md
@@ -90,7 +92,7 @@ python src/run_demo.py
 
 ## Run Evals
 
-The current repository includes a small hand-labelled prototype evaluation set, a 300-row supplementary public Jigsaw sample, and a metric summary. The intended full version is 150 hand-relabelled items; this submission keeps the core evaluated set inspectable and transparent:
+The current repository includes a small hand-labelled prototype evaluation set, a 300-row supplementary public Jigsaw sample, supplementary public eval results, and metric summaries. The intended full version is 150 hand-relabelled items; this submission keeps the core evaluated set inspectable and transparent while adding a larger public sanity check:
 
 - False negative rate on high and critical harassment.
 - False positive or over-prompt rate on normal criticism.

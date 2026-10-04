@@ -1,0 +1,5 @@
+metric,target,result,notes
+public_jigsaw_sample_size,reported,300,Supplementary public Jigsaw sample mechanically mapped into Shield labels.
+public_jigsaw_exact_label_accuracy,reported,38.7%,Exact label match between local fallback and Jigsaw-mapped Shield label.
+public_jigsaw_false_positive_rate_normal_reference,<15-20%,5.0%,5 of 100 normal-reference public samples were prompted or escalated.
+public_jigsaw_false_negative_rate_high_critical,<10%,85.0%,85 of 100 high/critical public samples were not escalated by the local fallback.

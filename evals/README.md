@@ -22,6 +22,8 @@ Shield is evaluated as a product intervention, not only as a classifier. The key
 
 ## Files
 
-- `eval_cases.csv`: single-comment evaluation cases and prototype predictions.
+- `eval_cases.csv`: small hand-labelled single-comment evaluation cases and prototype predictions.
 - `context_eval_cases.csv`: context movement cases.
-- `metrics_summary.csv`: target and result summary.
+- `metrics_summary.csv`: target and result summary for the core prototype eval.
+- `public_jigsaw_eval_300.csv`: supplementary 300-row public Jigsaw eval using mechanically mapped Shield labels.
+- `public_jigsaw_metrics_300.csv`: supplementary metrics from the 300-row public Jigsaw eval.

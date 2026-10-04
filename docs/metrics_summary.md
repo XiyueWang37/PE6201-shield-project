@@ -21,6 +21,17 @@ cost per 1,000 comments =
 
 For the course submission, this value should be presented as either measured from provider usage logs or estimated with explicit assumptions. The key point is to show that Shield has been evaluated at platform scale, not only as a single-comment demo.
 
+## Supplementary Public Jigsaw Eval
+
+I also ran the local fallback against `public_jigsaw_sample_300.csv`, a supplementary public sample mechanically mapped from Jigsaw labels into Shield labels. This is not hand-relabelled ground truth, so it is reported separately from the core prototype eval.
+
+| Supplementary metric | Result | Interpretation |
+| --- | ---: | --- |
+| Sample size | 300 | 100 normal, 100 medium, 50 high, 50 critical mapped examples. |
+| Exact label accuracy | 38.7% | The fallback is too simple for broad public toxicity data. |
+| Normal-reference false positive rate | 5.0% | It mostly avoids over-prompting non-toxic public samples. |
+| High/critical false negative rate | 85.0% | It badly under-escalates severe mapped cases, reinforcing the need for a contextual LLM classifier. |
+
 ## Main Critique
 
 The current deterministic fallback is useful for demonstrating the system architecture, but it is not strong enough as the final classifier. It avoids over-prompting normal criticism, but it misses implicit threats such as location-based intimidation. This supports the product design choice: use a foundation model for contextual severity judgement, then pass the structured severity label into a deterministic policy table for auditable action selection.
