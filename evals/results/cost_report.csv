@@ -1,0 +1,5 @@
+backend,model_tier,currency,avg_input_tokens,avg_output_tokens,success_rate,escalate_rate,abstention_rate,token_cost_per_1000_comments,expected_review_cost_per_1000_comments,total_cost_per_1000_comments,total_cost_per_1000_successful_decisions,monthly_cost_at_config_volume,source_result_dir
+keyword,cheap_assumed,USD,0.0,0.0,0.9167,0.0833,0.0,0.0,55.555556,55.555556,60.606061,56155.56,evals/results/20261004T082551Z_keyword
+keyword,frontier_assumed,USD,0.0,0.0,0.9167,0.0833,0.0,0.0,55.555556,55.555556,60.606061,56155.56,evals/results/20261004T082551Z_keyword
+llm,cheap_assumed,USD,208.25,0.0,0.0,1.0,1.0,0.031238,666.666667,666.697904,inf,667297.9,evals/results/20261004T082500Z_llm
+llm,frontier_assumed,USD,208.25,0.0,0.0,1.0,1.0,1.04125,666.666667,667.707917,inf,668307.92,evals/results/20261004T082500Z_llm
