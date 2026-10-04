@@ -53,8 +53,9 @@ src/
   policy.py              # Deterministic severity-to-action policy table
   run_demo.py            # Command line demo
 data/
-  README.md              # Data source and relabelling explanation
-  relabelled_eval_set.csv # Hand-labelled prototype evaluation set
+  README.md                 # Data source and relabelling explanation
+  relabelled_eval_set.csv    # Hand-labelled prototype evaluation set
+  public_jigsaw_sample_300.csv # Supplementary public Jigsaw sample
 evals/
   README.md              # Evaluation design and metrics
   eval_cases.csv          # Single-comment eval results
@@ -89,7 +90,7 @@ python src/run_demo.py
 
 ## Run Evals
 
-The current repository includes a small prototype evaluation set and metric summary. The intended full version is 150 hand-relabelled items; this submission keeps the smaller set inspectable and transparent:
+The current repository includes a small hand-labelled prototype evaluation set, a 300-row supplementary public Jigsaw sample, and a metric summary. The intended full version is 150 hand-relabelled items; this submission keeps the core evaluated set inspectable and transparent:
 
 - False negative rate on high and critical harassment.
 - False positive or over-prompt rate on normal criticism.
