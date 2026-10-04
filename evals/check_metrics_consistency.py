@@ -1,8 +1,9 @@
-"""Check that documentation matches current generated metric artifacts.
+"""Check that documentation matches generated metric artifacts.
 
-The checker intentionally fails on stale references to deleted or invalid result
-runs. It reads `evals/latest/` and the newest valid timestamped result instead
-of hard-coding a timestamp.
+The checker fails on stale references to deleted or invalid result runs. It reads
+`evals/latest/` and the newest valid timestamped result instead of hard-coding a
+timestamp, then verifies that the key published values in the docs match those
+artifacts.
 """
 
 from __future__ import annotations
@@ -13,8 +14,17 @@ import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-DOCS = [ROOT / "README.md", ROOT / "docs" / "metrics_summary.md", ROOT / "docs" / "final_report_draft.md"]
-DELETED_OR_INVALID_REFS = ["20261004T082448Z_keyword", "20261004T082500Z_llm", "USD 666.70", "USD 55.56"]
+DOCS = [
+    ROOT / "README.md",
+    ROOT / "docs" / "metrics_summary.md",
+    ROOT / "docs" / "final_report_draft.md",
+]
+DELETED_OR_INVALID_REFS = [
+    "20261004T082448Z_keyword",
+    "20261004T082500Z_llm",
+    "USD 666.70",
+    "USD 55.56",
+]
 
 
 def read_csv(path: Path) -> list[dict[str, str]]:
@@ -23,7 +33,11 @@ def read_csv(path: Path) -> list[dict[str, str]]:
 
 
 def latest_valid_metadata(backend: str) -> tuple[Path, dict[str, object]]:
-    candidates = sorted(path for path in (ROOT / "evals" / "results").glob("20*T*_*/*") if path.name == "run_metadata.json")
+    candidates = sorted(
+        path
+        for path in (ROOT / "evals" / "results").glob("20*T*_*/*")
+        if path.name == "run_metadata.json"
+    )
     valid = []
     for path in candidates:
         with path.open(encoding="utf-8") as handle:
@@ -57,37 +71,62 @@ def find_stale_references(lines_by_doc: dict[Path, list[str]]) -> list[str]:
     return errors
 
 
+def rows_by_metric(path: Path) -> dict[tuple[str, str], dict[str, str]]:
+    return {(row["slice"], row["metric"]): row for row in read_csv(path)}
+
+
+def metric_result(path: Path, slice_name: str, metric: str) -> str:
+    rows = rows_by_metric(path)
+    try:
+        return rows[(slice_name, metric)]["result"]
+    except KeyError as exc:
+        raise KeyError(f"Missing {slice_name}/{metric} in {path}") from exc
+
+
+def cost_row(backend: str) -> dict[str, str]:
+    for row in read_csv(ROOT / "evals" / "results" / "cost_report.csv"):
+        if row["backend"] == backend and row["prevalence_scenario"] == "platform_assumed":
+            return row
+    raise KeyError(f"Missing platform_assumed cost row for {backend}")
+
+
 def expected_strings() -> list[str]:
-    latest_metrics = read_csv(ROOT / "evals" / "latest" / "keyword_metrics_summary.csv")
-    cost_rows = read_csv(ROOT / "evals" / "results" / "cost_report.csv")
-    wanted = []
-    for row in latest_metrics:
-        if row["slice"] in {"original12", "combined", "context", "public_jigsaw"} and row["metric"] in {
-            "false_negative_rate_high_critical",
-            "false_positive_rate_normal_criticism",
-            "action_accuracy",
-            "macro_f1",
-            "context_strict_accuracy",
-            "jigsaw_threat_flagged_fnr",
-            "jigsaw_profanity_only_high_upgrade_rate",
-        }:
-            wanted.append(row["result"])
-    for row in cost_rows:
-        if row["backend"] == "keyword" and row["prevalence_scenario"] == "platform_assumed":
-            wanted.extend([
-                f"USD {float(row['token_cost_per_1000_comments']):.2f}",
-                f"USD {float(row['total_cost_per_1000_comments']):.2f}",
-            ])
-    return sorted(set(wanted))
+    keyword = ROOT / "evals" / "latest" / "keyword_metrics_summary.csv"
+    llm = ROOT / "evals" / "latest" / "llm_metrics_summary.csv"
+    wanted = [
+        metric_result(keyword, "fresh", "false_negative_rate_high_critical"),
+        metric_result(keyword, "fresh", "false_positive_rate_normal_criticism"),
+        metric_result(keyword, "fresh", "action_accuracy"),
+        metric_result(keyword, "fresh", "overall_accuracy"),
+        metric_result(keyword, "fresh", "macro_f1"),
+        metric_result(keyword, "context", "context_strict_accuracy"),
+        metric_result(llm, "fresh", "false_negative_rate_high_critical"),
+        metric_result(llm, "fresh", "false_positive_rate_normal_criticism"),
+        metric_result(llm, "fresh", "action_accuracy"),
+        metric_result(llm, "fresh", "overall_accuracy"),
+        metric_result(llm, "fresh", "macro_f1"),
+        metric_result(llm, "context", "context_strict_accuracy"),
+        metric_result(llm, "context", "context_lenient_accuracy"),
+        metric_result(keyword, "public_jigsaw", "jigsaw_threat_flagged_fnr"),
+        metric_result(llm, "public_jigsaw", "jigsaw_threat_flagged_fnr"),
+    ]
+    for backend in ("keyword", "llm"):
+        row = cost_row(backend)
+        wanted.append(f"USD {float(row['total_cost_per_1000_comments']):.2f}")
+        if backend == "llm":
+            wanted.append(f"USD {float(row['token_cost_per_1000_comments']):.6f}")
+        wanted.append(row["p_action_success"])
+    return sorted(set(item for item in wanted if item))
 
 
 def main() -> int:
     latest_valid_metadata("keyword")
+    latest_valid_metadata("llm")
     lines_by_doc = doc_lines()
     errors = find_stale_references(lines_by_doc)
     combined = "\n".join("\n".join(lines) for lines in lines_by_doc.values())
     for item in expected_strings():
-        if item and item not in combined:
+        if item not in combined:
             errors.append(f"documented metric string missing from docs: `{item}`")
     if errors:
         print("Metric consistency check failed:")

@@ -1,39 +1,59 @@
 # Metrics Summary
 
-All active numbers in this file come from script outputs in `evals/latest/`, `evals/results/`, or `evals/results/cost_report.csv`. The old no-key LLM run was invalid because every row abstained due to missing credentials; that result directory has been removed and must not be used as evidence.
+All active numbers come from script outputs in `evals/latest/`, `evals/results/`, and `evals/results/cost_report.csv`. The old no-key LLM run was invalidated and is not used.
 
-## Keyword Baseline
+## Core Evaluation
 
-Source: `evals/latest/keyword_metrics_summary.csv` and the latest valid keyword run under `evals/results/`.
+Headline results use the fresh human-reviewed candidate slice. The original12 slice remains reported because it was seen while developing the keyword fallback.
 
-| Slice | Metric | Result | Note |
-| --- | --- | ---: | --- |
-| original12 | False negative rate, high/critical | 75.0% | 3 of 4 high/critical cases were not escalated; 95% CI 19.4%-99.4%. This slice was seen while tuning the keyword fallback. |
-| original12 | False positive rate, normal criticism | 0.0% | 0 of 4 normal criticism cases were prompted/escalated; 95% CI 0.0%-60.2%. |
-| original12 | Action accuracy | 66.7% | Predicted action equals gold policy action and does not abstain. |
-| original12 | Macro F1 | 0.395 | Exact severity macro F1. |
-| fresh | Fresh labelled cases | 0 | Waiting for human-reviewed `data/candidates_to_label.csv` merge in Phase C. |
-| context | Strict / lenient movement accuracy | 80.0% / 80.0% | 5 context cases; one expected escalation missed. |
+| Backend | Slice | FNR high/critical | FPR normal criticism | Action accuracy | Severity accuracy | Macro F1 | Abstention |
+| --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
+| keyword | original12 | 75.0% | 0.0% | 66.7% | 66.7% | 0.395 | 0.0% |
+| keyword | fresh | 94.3% | 0.0% | 51.1% | 44.4% | 0.224 | 0.0% |
+| keyword | combined | 92.3% | 0.0% | 52.9% | 47.1% | 0.261 | 0.0% |
+| LLM prompt_v2 | original12 | 0.0% | 0.0% | 83.3% | 75.0% | 0.483 | 0.0% |
+| LLM prompt_v2 | fresh | 5.7% | 0.0% | 88.9% | 74.4% | 0.617 | 0.0% |
+| LLM prompt_v2 | combined | 5.1% | 0.0% | 88.2% | 74.5% | 0.616 | 0.0% |
+
+Fresh confidence intervals: keyword FNR 80.8%-99.3%, keyword FPR 0.0%-10.0%; LLM FNR 0.7%-19.2%, LLM FPR 0.0%-10.0%.
+
+## Context Movement
+
+| Backend | Context n | Strict accuracy | Lenient accuracy | Missed expected escalations |
+| --- | ---: | ---: | ---: | ---: |
+| keyword | 17 | 58.8% | 58.8% | 7 |
+| LLM prompt_v2 | 17 | 82.4% | 88.2% | 2 |
+
+Keyword missed examples include `See you soon.` after stalking context and `I will wait.` after parking-location context. LLM v2 still missed `I will see you again.` and `I will wait.` as movement cases because it already labelled the final comment high without context.
+
+## Lazy Baseline
+
+The all-high baseline gets 0.0% FNR on high/critical cases but 100.0% normal-criticism FPR. This is a product failure even though the safety recall metric looks perfect.
 
 ## Public Jigsaw Supplement
 
-Source: latest valid keyword run `public_jigsaw_metrics.json`.
+| Backend | Jigsaw normal-reference FPR | Jigsaw high/critical FNR | Threat-flagged FNR | Profanity-only high upgrade rate |
+| --- | ---: | ---: | ---: | ---: |
+| keyword | 5.0% | 85.0% | 50.0% | 7.7% |
+| LLM prompt_v2 | 3.0% | 67.0% | 21.4% | 15.4% |
 
-| Metric | Result | Note |
-| --- | ---: | --- |
-| Jigsaw mapped exact severity accuracy | 38.7% | Supplement only; labels are mechanically mapped from Jigsaw fields. |
-| Jigsaw normal-reference FPR | 5.0% | 5 of 100 normal-reference rows were prompted/escalated. |
-| Jigsaw high/critical FNR | 85.0% | Inflated by the mechanical mapping of severe toxic/profanity rows to high. |
-| Jigsaw threat-flagged FNR | 50.0% | 7 of 14 rows with `jigsaw_threat=1` were not escalated. |
-| Jigsaw profanity-only high upgrade rate | 7.7% | 3 of 39 high-mapped rows without threat were escalated. |
+Jigsaw is supplementary only. Its high bucket is distorted by mechanical mapping: only 11 of 50 high-mapped rows carry the threat label; 39 are severe-toxic/profanity-only rows.
+
+## Prompt Tuning
+
+Prompt v2 was chosen after one permitted change. On held-out fresh test rows, action accuracy improved from 78.3% to 87.0%, high/critical FNR improved from 22.2% to 5.6%, and normal FPR stayed 0.0%.
 
 ## Cost
 
 Source: `evals/results/cost_report.csv`.
 
-| Backend | Scenario | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | Note |
-| --- | --- | ---: | ---: | ---: | ---: | --- |
-| keyword | platform_assumed | USD 0.00 | USD 10.11 | USD 10.11 | 2.333 | Uses ASSUMED platform prevalence: normal 96%, medium 3%, severe 1%. |
-| keyword | eval_observed_reference_only | USD 0.00 | USD 222.22 | USD 222.22 | 83.333 | Reference only; the 12-row set has an unrealistically high severe share. |
+| Backend | Scenario | Token cost / 1,000 | Fallback cost / 1,000 | Total / 1,000 | Necessary review / 1,000 | p |
+| --- | --- | ---: | ---: | ---: | ---: | ---: |
+| keyword | platform_assumed | USD 0.00 | USD 18.58 | USD 18.58 | 0.875 | 0.972125 |
+| LLM prompt_v2 cheap | platform_assumed | USD 0.064674 | USD 11.64 | USD 11.70 | 9.417 | 0.982542 |
+| keyword | eval_observed_reference_only | USD 0.00 | USD 313.73 | USD 313.73 | 29.412 | 0.529412 |
+| LLM prompt_v2 cheap | eval_observed_reference_only | USD 0.064654 | USD 78.43 | USD 78.50 | 362.745 | 0.882353 |
 
-All prices, prevalence, review-time, wage, and harm-cost values are ASSUMED and must be verified before submission. No valid LLM quality or LLM cost result exists yet.
+Break-even note: no frontier model was measured. With ASSUMED frontier prices and cheap measured token volume, frontier would need p* = 0.985403 compared with cheap p = 0.982542. Do not claim a frontier result.
+
+All prices, platform prevalence, review time, reviewer wage, monthly volume, and missed-harm cost values are ASSUMED and must be verified before submission.

@@ -1,6 +1,6 @@
 # Shield Demo Script
 
-Target length: 5 minutes. Show your face and screen.
+Target length: 5 minutes. Show your face and screen while explaining.
 
 ## Before Recording
 
@@ -9,6 +9,7 @@ Open the GitHub repository and a Terminal in the project folder.
 ```bash
 python3 src/run_demo.py
 python3 evals/run_eval.py --backend keyword --jigsaw-n 300
+python3 evals/run_eval.py --backend llm --jigsaw-n 300
 python3 evals/cost_model.py
 ```
 
@@ -17,16 +18,17 @@ Open these files:
 - `README.md`
 - `docs/metrics_summary.md`
 - `evals/results/cost_report.md`
+- `docs/prompt_tuning.md`
 
 ## 0:00-0:30 Opening
 
 Hi, my project is Shield, an AI-assisted harmful content intervention prototype for social media platforms. Shield classifies harassment severity in context and maps the label into allow, prompt reconsideration, or escalation to a human moderator.
 
-## 0:30-1:15 Architecture
+## 0:30-1:10 Architecture
 
-Show the mermaid architecture in `README.md`. Explain that the classifier estimates severity, but `src/policy.py` makes the action deterministic and auditable. Mention that the measured backend is the keyword fallback. The LLM interface exists, but no successful LLM call is reported without `SHIELD_API_KEY`.
+Show the architecture in `README.md`. Explain that the classifier estimates severity, but `src/policy.py` makes the final product action deterministic and auditable. Point out the two measured backends: keyword baseline and LLM prompt_v2.
 
-## 1:15-2:20 Demo Cases
+## 1:10-2:05 Demo Cases
 
 Run:
 
@@ -38,30 +40,33 @@ Show three cases:
 
 1. Normal criticism: allowed.
 2. Direct insult: medium, prompt reconsideration.
-3. Context-sensitive case: the final comment is ambiguous alone but riskier with context.
+3. Context-sensitive case: the final comment becomes riskier in context.
 
-Also name the failure: the keyword fallback under-escalates implicit threats. That is why this is a baseline, not a deployable classifier.
-
-## 2:20-3:30 Metrics
+## 2:05-3:10 Metrics
 
 Show `docs/metrics_summary.md`.
 
-Key measured keyword results:
+Fresh slice headline:
 
-- High/critical FNR: 75.0%, which fails the safety target.
-- Normal criticism FPR: 0.0%, which passes on a tiny sample.
-- Exact accuracy: 66.7%.
-- Macro F1: 0.395.
-- Context strict accuracy: 80.0%.
+- Keyword FNR: 94.3%; LLM v2 FNR: 5.7%.
+- Keyword FPR: 0.0%; LLM v2 FPR: 0.0%.
+- Keyword macro F1: 0.224; LLM v2 macro F1: 0.617.
+- Keyword context strict/lenient: 58.8% / 58.8%; LLM v2: 82.4% / 88.2%.
 
 Explain the lazy baseline: all-high gets 0.0% FNR but 100.0% FPR, proving that FNR alone can be gamed.
 
-## 3:30-4:20 Cost
+## 3:10-3:45 Failure Case
 
-Show `evals/results/cost_report.md`.
+Show one real LLM v2 failure from `evals/results/20261004T100146Z_llm/eval_cases.csv`: `I am going to be outside after the meeting.` Gold is high/escalate, but LLM predicted normal/allow. This shows the model still misses some implicit offline threats.
 
-The cost model uses ASSUMED prices that need verification. Under those assumptions, keyword fallback costs about USD 55.56 per 1,000 comments after expected human-review fallback. The LLM no-key path costs about USD 666.70 per 1,000 comments because every case abstains and escalates.
+## 3:45-4:25 Prompt Tuning
 
-## 4:20-5:00 Closing
+Show `docs/prompt_tuning.md`. Explain that v1 under-labelled direct insults and implicit threats. One prompt change added boundary calibration. On held-out test, action accuracy improved from 78.3% to 87.0%, FNR improved from 22.2% to 5.6%, and FPR stayed 0.0%.
 
-State the critique clearly: the current system is auditable and runnable, but the classifier is weak. The next step is human review of `data/candidates_to_label.csv`, expanding the core set to around 150 items, and rerunning both keyword and real LLM backends. The product should remain human-in-the-loop for severe and uncertain cases.
+## 4:25-4:50 Cost
+
+Show `evals/results/cost_report.md`. Under ASSUMED platform prevalence and review-cost assumptions, keyword costs USD 18.58 per 1,000 comments; LLM v2 costs USD 11.70 per 1,000, including USD 0.064674 token cost and expected fallback cost.
+
+## 4:50-5:00 Closing
+
+Close with the critique: Shield is auditable and the LLM improves substantially over keywords on the fresh slice, but the evaluation is still small, single-reviewer, and partly AI-drafted. The deployment path should remain human-in-the-loop.
