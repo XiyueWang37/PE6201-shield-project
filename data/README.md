@@ -1,28 +1,28 @@
 # Data Explanation
 
-The final project should avoid treating dataset collection as the main contribution. Based on intermediate feedback, the data strategy is narrowed to a smaller hand-relabelled evaluation set.
-
-## Final Data Strategy
-
-- Use around 150 hand-relabelled comments as the core evaluation set.
-- Label each item into Shield's severity taxonomy: `normal`, `low`, `medium`, `high`, or `critical`.
-- Include a normal-criticism slice so false positives and over-prompting can be measured.
-- Include high/critical cases so severe false negatives can be measured.
-- Use a separate context-sensitivity set of short threads where the final comment is tested alone and with preceding context.
-
-## Dataset Scope Decision
-
-The original project statement considered several public datasets. The final submission should emphasize relabelling quality rather than the number of source datasets. OLID is dropped because tweet-ID re-fetching introduces avoidable access and reproducibility risk.
-
-## Public Supplement
-
-To make the repository less sparse while keeping the data strategy simple, I added a 300-row supplementary sample from the public Jigsaw Toxic Comment Classification Challenge dataset. This sample is mechanically mapped into Shield labels from the original Jigsaw labels, so it should be treated as public supplementary testing data, not as hand-relabelled ground truth.
-
-Source: Jigsaw Toxic Comment Classification Challenge, accessed through the `preethi16102005/Jigsaw-Toxic-Comments` Hugging Face mirror. The dataset contains original comment text and labels such as `toxic`, `severe_toxic`, `threat`, `insult`, and `identity_hate`.
+The final project avoids treating dataset collection as the main contribution. The core evaluated set remains small and inspectable, while a larger public sample is included as supplementary evidence.
 
 ## Files
 
-- `relabelled_eval_set.csv`: hand-labelled prototype evaluation set used for the reported metrics. The intended full version is 150 relabelled items.
+- `relabelled_eval_set.csv`: small hand-labelled prototype evaluation set used for the core reported metrics. The intended full version is 150 human-reviewed items.
 - `public_jigsaw_sample_300.csv`: supplementary public Jigsaw sample with 100 normal, 100 medium, 50 high, and 50 critical mapped examples.
+- `candidates_to_label.csv`: AI-drafted candidate rows for human review. The `shield_label` column is intentionally blank; `proposed_label` is only a suggestion.
+
+## Jigsaw Supplement Mapping
+
+The public Jigsaw sample comes from the Jigsaw Toxic Comment Classification Challenge through the `preethi16102005/Jigsaw-Toxic-Comments` Hugging Face mirror. It contains long Wikipedia talk-page comments, so its distribution differs from short social media comments.
+
+The mapping used in `public_jigsaw_sample_300.csv` is visible in the `jigsaw_*` columns and `mapping_notes`:
+
+- all Jigsaw toxicity labels are `0` -> `normal`
+- `toxic`, `insult`, or `obscene` without `severe_toxic`, `threat`, or `identity_hate` -> `medium`
+- `severe_toxic` or `threat` without `identity_hate` -> `high`
+- `identity_hate` -> `critical`
+
+These mapped labels are not human severity judgements. They are a mechanical bridge from Jigsaw's label schema into Shield's taxonomy and should be reported separately from the core hand-labelled eval.
+
+## Human Review Plan
+
+The file `candidates_to_label.csv` contains AI-drafted examples covering normal criticism, non-targeted profanity, sarcasm, implicit threats, location or routine intimidation, and multi-comment context cases. A human reviewer should fill `shield_label`, then any accepted rows can be merged into a larger core set with `labeller=human_reviewed`.
 
 Do not include private platform data or API keys in this folder.

@@ -1,37 +1,32 @@
 # Shield Demo Script
 
-Target length: around 5 minutes. Keep the delivery precise and calm. Show your face and the screen.
+Target length: 5 minutes. Show your face and screen.
 
 ## Before Recording
 
-Open the GitHub repository page and a Terminal window in the project folder.
+Open the GitHub repository and a Terminal in the project folder.
 
 ```bash
-cd /path/to/PE6201-shield-project
 python3 src/run_demo.py
+python3 evals/run_eval.py --backend keyword --jigsaw-n 300
+python3 evals/cost_model.py
 ```
 
-Also open:
+Open these files:
 
 - `README.md`
 - `docs/metrics_summary.md`
-- `evals/metrics_summary.csv`
+- `evals/results/cost_report.md`
 
 ## 0:00-0:30 Opening
 
-Hi, my project is Shield, an AI-assisted harmful content intervention prototype for social media platforms.
-
-The problem is that online harassment is often contextual. A sentence can look harmless alone, but become threatening after repeated unwanted contact or stalking cues. Shield is designed to classify the severity of a comment in context, then turn that label into a product action: allow, prompt the user to reconsider, or escalate to a human moderator.
+Hi, my project is Shield, an AI-assisted harmful content intervention prototype for social media platforms. Shield classifies harassment severity in context and maps the label into allow, prompt reconsideration, or escalation to a human moderator.
 
 ## 0:30-1:15 Architecture
 
-Show the architecture section in `README.md` or `docs/architecture.md`.
+Show the mermaid architecture in `README.md`. Explain that the classifier estimates severity, but `src/policy.py` makes the action deterministic and auditable. Mention that the measured backend is the keyword fallback. The LLM interface exists, but no successful LLM call is reported without `SHIELD_API_KEY`.
 
-Shield has two layers. First, a severity classifier reads the final comment and optional thread context. It returns a structured output: severity, rationale, and confidence. Second, a deterministic policy table maps the severity label to an action.
-
-This separation is important. The AI handles contextual language judgement, but the product decision remains auditable. If the platform wants to change what happens to a medium-severity case, it can change the policy table without retraining the classifier.
-
-## 1:15-2:25 Demo
+## 1:15-2:20 Demo Cases
 
 Run:
 
@@ -39,38 +34,34 @@ Run:
 python3 src/run_demo.py
 ```
 
-Explain the three examples.
+Show three cases:
 
-First, normal criticism: "I disagree with your conclusion because the evidence is weak." Shield allows it. That is important because the product should not suppress ordinary disagreement.
+1. Normal criticism: allowed.
+2. Direct insult: medium, prompt reconsideration.
+3. Context-sensitive case: the final comment is ambiguous alone but riskier with context.
 
-Second, direct insult: "You are such an idiot and should shut up." Shield classifies this as medium and triggers a reconsideration prompt. This is a lower-impact intervention before posting.
+Also name the failure: the keyword fallback under-escalates implicit threats. That is why this is a baseline, not a deployable classifier.
 
-Third, the context-sensitive case: the final comment is "I will see you again." Alone, this could be harmless. But with the preceding context, where the user has already said "stop messaging me" and the other person says they know where the user goes after class, it becomes more threatening. This is the core reason Shield evaluates comments in context.
-
-## 2:25-3:40 Metrics
+## 2:20-3:30 Metrics
 
 Show `docs/metrics_summary.md`.
 
-I evaluate Shield as a product intervention, not only as a classifier. Based on feedback, I report false negatives and false positives together.
+Key measured keyword results:
 
-On the small prototype eval set, the false positive rate on normal criticism is 0 percent. That means normal criticism was not over-prompted in this set.
+- High/critical FNR: 75.0%, which fails the safety target.
+- Normal criticism FPR: 0.0%, which passes on a tiny sample.
+- Exact accuracy: 66.7%.
+- Macro F1: 0.395.
+- Context strict accuracy: 80.0%.
 
-However, the false negative rate on high and critical cases is 75 percent for the local fallback. That is a weakness, not something I want to hide. It shows that the deterministic fallback misses implicit threats and should not be treated as the final classifier.
+Explain the lazy baseline: all-high gets 0.0% FNR but 100.0% FPR, proving that FNR alone can be gamed.
 
-This result supports the final architecture: use a contextual foundation model for severity judgement, then use the deterministic policy table for action selection.
+## 3:30-4:20 Cost
 
-I also include cost per 1,000 comments. The current repo reports it as an estimate below USD 0.10 for short comments with a low-cost hosted model, but in a production run this should be replaced by measured token usage.
+Show `evals/results/cost_report.md`.
 
-## 3:40-4:35 Critique and Responsible Use
+The cost model uses ASSUMED prices that need verification. Under those assumptions, keyword fallback costs about USD 55.56 per 1,000 comments after expected human-review fallback. The LLM no-key path costs about USD 666.70 per 1,000 comments because every case abstains and escalates.
 
-The biggest risk is silent failure. If the system classifies a severe harassment case as normal, nothing visibly breaks, but the user is left unprotected. That is why high-risk and uncertain cases should be escalated to human moderators.
+## 4:20-5:00 Closing
 
-The other risk is over-prompting. If Shield interrupts normal criticism too often, users will stop trusting the product. That is why I added the normal-criticism false-positive ceiling.
-
-This prototype is English-only and uses a small eval set. It does not yet fully test multilingual abuse, coded language, demographic bias, or adversarial spelling.
-
-## 4:35-5:00 Closing
-
-The main contribution of Shield is the product design: contextual AI judgement combined with a deterministic, auditable policy layer.
-
-The next step would be to replace the local fallback with a measured foundation-model classifier, run the full 150 hand-relabelled cases, and keep reporting the same pair of metrics: severe false-negative rate and normal-criticism false-positive rate, plus cost per 1,000 comments.
+State the critique clearly: the current system is auditable and runnable, but the classifier is weak. The next step is human review of `data/candidates_to_label.csv`, expanding the core set to around 150 items, and rerunning both keyword and real LLM backends. The product should remain human-in-the-loop for severe and uncertain cases.

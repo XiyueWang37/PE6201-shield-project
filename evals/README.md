@@ -2,28 +2,54 @@
 
 Shield is evaluated as a product intervention, not only as a classifier. The key question is whether it catches severe harm without over-prompting normal users.
 
-## Metrics
+## How to Run
 
-1. False negative rate on high/critical harassment.
-   - Measures severe harmful comments incorrectly allowed or under-classified.
-   - Target: below 10%.
+Keyword backend, no API key required:
 
-2. False positive or over-prompt rate on normal criticism.
-   - Measures normal criticism incorrectly prompted or escalated.
-   - Target: below 15-20%.
+```bash
+python3 evals/run_eval.py --backend keyword --jigsaw-n 300
+```
 
-3. Context-sensitivity test.
-   - Run each thread twice: final comment alone, then final comment with context.
-   - Report whether the severity label moves correctly.
+LLM backend, API key required:
 
-4. Cost per 1,000 comments.
-   - Estimate from measured average tokens per comment and provider model pricing.
-   - This answers whether the system is viable at platform volume.
+```bash
+export SHIELD_API_KEY="..."
+python3 evals/run_eval.py --backend llm --jigsaw-n 0
+```
+
+Cost model:
+
+```bash
+python3 evals/cost_model.py
+```
 
 ## Files
 
-- `eval_cases.csv`: small hand-labelled single-comment evaluation cases and prototype predictions.
-- `context_eval_cases.csv`: context movement cases.
-- `metrics_summary.csv`: target and result summary for the core prototype eval.
-- `public_jigsaw_eval_300.csv`: supplementary 300-row public Jigsaw eval using mechanically mapped Shield labels.
-- `public_jigsaw_metrics_300.csv`: supplementary metrics from the 300-row public Jigsaw eval.
+- `run_eval.py`: reproducible evaluation runner for keyword and LLM backends.
+- `cost_model.py`: cost model using measured usage/action outputs and ASSUMED prices.
+- `eval_cases.csv`: latest core eval output written by `run_eval.py`.
+- `context_eval_cases.csv`: context test inputs. Old hand-written labels have been renamed to `legacy_handwritten_*` and are not used for metrics.
+- `metrics_summary.csv`: latest core metrics written by `run_eval.py`.
+- `public_jigsaw_eval_300.csv`: earlier supplementary public Jigsaw eval output.
+- `public_jigsaw_metrics_300.csv`: earlier supplementary public Jigsaw metrics.
+- `results/`: timestamped reproducible outputs, including confusion matrices, run metadata, context movement results, and cost reports.
+
+## Current Measured Results
+
+Latest keyword run: `evals/results/20261004T082551Z_keyword/`
+
+- High/critical FNR: 75.0% (3 of 4 missed)
+- Normal criticism FPR: 0.0% (0 of 4 over-prompted)
+- Exact accuracy: 66.7%
+- Macro F1: 0.395
+- Context strict/lenient accuracy: 80.0%
+- Lazy all-high baseline: 0.0% FNR but 100.0% FPR
+
+LLM run: `evals/results/20261004T082500Z_llm/`
+
+- No API key was present, so every case abstained and escalated.
+- This is a failure-path test, not a valid LLM performance comparison.
+
+## Known Limitations
+
+The core labelled set is still very small. The public Jigsaw sample uses mechanical label mapping, not Shield-specific human relabelling. The keyword fallback appears tuned to test examples and uses substring matching, so words such as `diet` or `skill` can trigger `die` or `kill` matches. Report these weaknesses rather than hiding them.
