@@ -1,0 +1,103 @@
+id,candidate_type,source,comment,preceding_context,final_comment,shield_label,proposed_label,hard_case_type,notes
+1,single,ai_drafted,This feature is poorly designed and needs clearer evidence before launch.,,,,normal,legitimate_criticism,Strong criticism but not personal harassment.
+2,single,ai_drafted,Your conclusion ignores the main cost constraint.,,,,normal,legitimate_criticism,Negative academic/product criticism.
+3,single,ai_drafted,I think this analysis is shallow and misses the obvious trade-off.,,,,normal,legitimate_criticism,Blunt but about work quality.
+4,single,ai_drafted,The model choice is not justified by the results shown here.,,,,normal,legitimate_criticism,"Critiques evidence, not person."
+5,single,ai_drafted,This report is confusing and should be rewritten more clearly.,,,,normal,legitimate_criticism,Harsh feedback but legitimate.
+6,single,ai_drafted,I disagree with your recommendation because the false positives are too high.,,,,normal,legitimate_criticism,Normal disagreement.
+7,single,ai_drafted,The demo does not prove the claim you are making.,,,,normal,legitimate_criticism,Valid critique.
+8,single,ai_drafted,Your argument would be stronger with a larger test set.,,,,normal,legitimate_criticism,Constructive criticism.
+9,single,ai_drafted,This design creates too much friction for ordinary users.,,,,normal,legitimate_criticism,Product criticism.
+10,single,ai_drafted,"The policy table is understandable, but the classifier evidence is weak.",,,,normal,legitimate_criticism,Mixed evaluation.
+11,single,ai_drafted,I do not buy this result without confidence intervals.,,,,normal,legitimate_criticism,Sharp but fair.
+12,single,ai_drafted,The cost estimate needs a source before I would trust it.,,,,normal,legitimate_criticism,Critical but not abusive.
+13,single,ai_drafted,This is not production-ready yet.,,,,normal,legitimate_criticism,Blunt status assessment.
+14,single,ai_drafted,The assumptions are too optimistic for platform scale.,,,,normal,legitimate_criticism,Evaluation critique.
+15,single,ai_drafted,The interface is awkward and should be simplified.,,,,normal,legitimate_criticism,Design critique.
+16,single,ai_drafted,I would reject this proposal unless the eval is expanded.,,,,normal,legitimate_criticism,Severe judgement but not harassment.
+17,single,ai_drafted,The numbers are not convincing because the sample is tiny.,,,,normal,legitimate_criticism,Metrics critique.
+18,single,ai_drafted,This moderation rule seems overbroad and could annoy users.,,,,normal,legitimate_criticism,Normal policy critique.
+19,single,ai_drafted,Your implementation is too brittle for real deployment.,,,,normal,legitimate_criticism,Code critique.
+20,single,ai_drafted,The README should make the run path easier to follow.,,,,normal,legitimate_criticism,Documentation critique.
+21,single,ai_drafted,The classifier is not strong enough to support that conclusion.,,,,normal,legitimate_criticism,Technical critique.
+22,single,ai_drafted,This example does not demonstrate contextual understanding.,,,,normal,legitimate_criticism,Evidence critique.
+23,single,ai_drafted,I think the threshold is too aggressive for normal discussion.,,,,normal,legitimate_criticism,Product feedback.
+24,single,ai_drafted,"The workflow is understandable, but the data is too small.",,,,normal,legitimate_criticism,Balanced critique.
+25,single,ai_drafted,You should explain why this beats a keyword baseline.,,,,normal,legitimate_criticism,Course-relevant critique.
+26,single,ai_drafted,This is a bad metric for the problem you describe.,,,,normal,legitimate_criticism,Strong but topical.
+27,single,ai_drafted,The sample looks cherry-picked and needs random selection.,,,,normal,legitimate_criticism,Method critique.
+28,single,ai_drafted,The argument is incomplete without failure cases.,,,,normal,legitimate_criticism,Normal critique.
+29,single,ai_drafted,This section is vague and should name the trade-offs.,,,,normal,legitimate_criticism,Writing critique.
+30,single,ai_drafted,"The product idea is useful, but the evaluation is still thin.",,,,normal,legitimate_criticism,Balanced but critical.
+31,single,ai_drafted,"The code runs, but the claims are stronger than the evidence.",,,,normal,legitimate_criticism,Evaluation critique.
+32,single,ai_drafted,I would not deploy this without a better false-positive test.,,,,normal,legitimate_criticism,Deployment critique.
+33,single,ai_drafted,This assumption does not hold for a large platform.,,,,normal,legitimate_criticism,Scale critique.
+34,single,ai_drafted,The architecture is clear but the classifier needs validation.,,,,normal,legitimate_criticism,Technical critique.
+35,single,ai_drafted,The report should be more honest about what was not measured.,,,,normal,legitimate_criticism,Meta critique.
+36,single,ai_drafted,You are such a fool for posting this.,,,,medium,direct_insult,Personal insult.
+37,single,ai_drafted,Nobody here wants your comments.,,,,medium,targeted_exclusion,Targeted hostile exclusion.
+38,single,ai_drafted,Shut up and stop embarrassing yourself.,,,,medium,direct_insult,Direct insult and silencing.
+39,single,ai_drafted,"Your ideas are trash, but I am talking about the proposal, not you.",,,,low,non_targeted_profanity,"Profane criticism of ideas, lower severity."
+40,single,ai_drafted,"This whole thread is a mess, what the hell is going on?",,,,low,non_targeted_profanity,Non-targeted profanity.
+41,single,ai_drafted,You keep making the same stupid point.,,,,medium,direct_insult,Targets person.
+42,single,ai_drafted,"Go away, no one asked for you.",,,,medium,targeted_exclusion,Directed at user.
+43,single,ai_drafted,"Classic genius move, breaking everything again.",,,,low,sarcasm,Sarcastic criticism; reviewer should decide severity.
+44,single,ai_drafted,"Wow, another brilliant failure from you.",,,,medium,sarcasm,Sarcasm targeting person.
+45,single,ai_drafted,"This is damn frustrating, but the bug is fixable.",,,,low,non_targeted_profanity,Profanity not aimed at person.
+46,single,ai_drafted,You are useless in every discussion.,,,,medium,direct_insult,Personal attack.
+47,single,ai_drafted,"Stop replying to me, you creep.",,,,medium,targeted_insult,Potentially defensive but insulting.
+48,single,ai_drafted,Your comment is nonsense.,,,,low,legitimate_criticism,"Could be harsh critique, not necessarily harassment."
+49,single,ai_drafted,You always ruin every conversation.,,,,medium,targeted_hostility,Personal repeated accusation.
+50,single,ai_drafted,That take is idiotic.,,,,low,idea_targeted_insult,"Insults take, not person."
+51,single,ai_drafted,You are an idiot.,,,,medium,direct_insult,Simple personal insult.
+52,single,ai_drafted,What a stupid design decision.,,,,low,idea_targeted_insult,Targets design decision.
+53,single,ai_drafted,Everyone should block you.,,,,medium,targeted_exclusion,Coordinated exclusion.
+54,single,ai_drafted,You do not belong in this community.,,,,medium,targeted_exclusion,Hostile exclusion.
+55,single,ai_drafted,Your code is broken as hell.,,,,low,non_targeted_profanity,Profanity about code.
+56,single,ai_drafted,I know which building you leave from after class.,,,,high,implicit_threat,Location/route intimidation without explicit violence.
+57,single,ai_drafted,Keep talking and I will be waiting outside.,,,,high,implicit_threat,Threatening presence.
+58,single,ai_drafted,"I saved your address, so choose your words carefully.",,,,critical,doxxing_threat,Address reference and intimidation.
+59,single,ai_drafted,You will regret posting that tonight.,,,,high,implicit_threat,Ambiguous but threatening.
+60,single,ai_drafted,I hope someone hurts you.,,,,high,harm_wish,Wish for harm.
+61,single,ai_drafted,I am going to make sure you cannot show your face here again.,,,,high,intimidation,Severe intimidation.
+62,single,ai_drafted,Your family should watch their backs.,,,,critical,third_party_threat,Threatens family.
+63,single,ai_drafted,I found your workplace. Nice office.,,,,high,location_intimidation,Location cue.
+64,single,ai_drafted,Delete this or I will post your private messages.,,,,critical,doxxing_blackmail,Threat to expose private info.
+65,single,ai_drafted,I know your commute now.,,,,high,location_intimidation,No explicit violence but tracking.
+66,single,ai_drafted,Someone should teach you a painful lesson.,,,,high,implicit_violence,Implied violence.
+67,single,ai_drafted,I can make people find you if you keep this up.,,,,critical,mobilized_threat,Threat to mobilize others.
+68,single,ai_drafted,Your account is not the only thing I can reach.,,,,high,implicit_threat,Ambiguous threat.
+69,single,ai_drafted,I will show up where you least expect it.,,,,high,stalking_cue,Stalking implication.
+70,single,ai_drafted,You should be scared to open your door.,,,,critical,explicit_fear_threat,Home intimidation.
+71,single,ai_drafted,I have screenshots of your address and friends.,,,,critical,doxxing_threat,Private info intimidation.
+72,single,ai_drafted,"Keep laughing, I know where the event is.",,,,high,location_intimidation,Event location cue.
+73,single,ai_drafted,I will make sure everyone knows your real name.,,,,critical,doxxing_threat,Identity exposure threat.
+74,single,ai_drafted,You will not feel safe after tomorrow.,,,,high,implicit_threat,Safety intimidation.
+75,single,ai_drafted,I have been watching your posts and your route.,,,,high,stalking_cue,Pattern of monitoring.
+76,single,ai_drafted,I hope your house burns down.,,,,critical,severe_harm_wish,Severe harm wish.
+77,single,ai_drafted,A person like you deserves to be attacked.,,,,high,harm_wish,Attack endorsement.
+78,single,ai_drafted,Say that again and I will come find you.,,,,high,explicit_intimidation,Direct intimidation.
+79,single,ai_drafted,I know the cafe you sit in every morning.,,,,high,location_intimidation,Routine location cue.
+80,single,ai_drafted,Your private photos would be easy to spread.,,,,critical,blackmail,Privacy threat.
+81,single,ai_drafted,I can ruin your life with one post.,,,,critical,severe_blackmail,Severe intimidation.
+82,single,ai_drafted,You should disappear before someone makes you.,,,,critical,violent_intimidation,Severe implied violence.
+83,single,ai_drafted,The next message will include your address.,,,,critical,doxxing_threat,Explicit doxxing threat.
+84,single,ai_drafted,People like you should be removed from this place.,,,,high,targeted_dehumanization,Severe exclusionary threat.
+85,single,ai_drafted,I will not stop until you are afraid to post.,,,,high,persistent_harassment,Coercive harassment.
+86,single,ai_drafted,You have no idea how close I am right now.,,,,high,stalking_cue,Proximity intimidation.
+87,single,ai_drafted,I know your school and your schedule.,,,,critical,location_intimidation,School/schedule threat.
+88,single,ai_drafted,I will make this personal if you answer again.,,,,high,implicit_threat,Escalation threat.
+89,single,ai_drafted,Your real name will be public by tonight.,,,,critical,doxxing_threat,Identity doxxing.
+90,single,ai_drafted,I am going to be outside after the meeting.,,,,high,implicit_threat,Physical presence threat.
+91,thread,ai_drafted,,User A: Please stop tagging me. User B: I know your usual bus stop.,See you there.,,high,location_intimidation,Thread candidate; label after human review.
+92,thread,ai_drafted,,User A: I disagree with your answer. User B: Which part is wrong?,The evidence is weak.,,normal,legitimate_criticism,Should remain normal if reviewed that way.
+93,thread,ai_drafted,,User A: Leave me alone. User B: I will not stop until you listen.,Again tomorrow.,,medium,repeated_unwanted_contact,Context changes a mild phrase.
+94,thread,ai_drafted,,"User A: Your code has a bug. User B: Thanks, where?",This function is broken.,,normal,legitimate_criticism,Technical criticism.
+95,thread,ai_drafted,,User A: Stop following my posts. User B: I saw your office yesterday.,Nice place.,,high,stalking_cue,Location cue changes meaning.
+96,thread,ai_drafted,,"User A: That claim is unsupported. User B: Fair, show me the issue.",Your argument is not convincing.,,normal,legitimate_criticism,Criticism in cooperative context.
+97,thread,ai_drafted,,User A: Do not contact my family. User B: They are easy to find.,Maybe they should hear this too.,,critical,third_party_threat,Family exposure threat.
+98,thread,ai_drafted,,User A: Please stop. User B: I know where you park.,I will wait.,,high,implicit_threat,No explicit violence but threatening.
+99,thread,ai_drafted,,User A: This design is confusing. User B: Why?,Because the flow is inconsistent.,,normal,legitimate_criticism,Hard criticism only.
+100,thread,ai_drafted,,User A: I blocked you. User B: Blocks do not work in real life.,See you soon.,,critical,stalking_threat,Offline threat.
+101,thread,ai_drafted,,User A: Stop messaging me. User B: I know your class schedule.,Tomorrow then.,,high,location_intimidation,Schedule cue.
+102,thread,ai_drafted,,User A: The paper is weak. User B: That is harsh but fair.,It needs stronger evidence.,,normal,legitimate_criticism,Normal critique with context.
