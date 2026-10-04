@@ -16,6 +16,9 @@ class ShieldResult:
     rationale: str
     confidence: str
     policy_action: str
+    input_tokens: int = 0
+    output_tokens: int = 0
+    abstain: bool = False
 
 
 HIGH_RISK_TERMS = {
