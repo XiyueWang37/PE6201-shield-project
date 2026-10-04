@@ -1,0 +1,2 @@
+model_tier,model_id,status,reason
+frontier_assumed,not_chosen_not_measured,not measured,No valid run for this tier; excluded from scenario table and no p reused from another tier.

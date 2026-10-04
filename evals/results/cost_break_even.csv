@@ -1,0 +1,2 @@
+baseline,candidate,required_frontier_p,observed_cheap_p,observed_frontier_p,frontier_token_cost_assumption,conclusion
+cheap_assumed,frontier_assumed,0.994904,0.9925,not measured,uses cheap measured token volume with frontier ASSUMED token prices,No frontier result was measured; do not claim frontier wins or loses.

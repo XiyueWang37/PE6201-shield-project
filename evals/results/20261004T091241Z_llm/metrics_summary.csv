@@ -1,0 +1,29 @@
+metric,slice,target,result,notes
+backend,run,reported,llm,Evaluation backend.
+false_negative_rate_high_critical,original12,<10%,0.0%,0 of 4 high/critical cases were not escalated. 95% CI 0.0%-60.2%.
+false_positive_rate_normal_criticism,original12,<15%,0.0%,0 of 4 normal criticism cases were prompted/escalated. PASS=True. 95% CI 0.0%-60.2%.
+hard_normal_false_positive_rate,original12,reported,0.0%,0 of 0 hard-normal cases were prompted/escalated.
+action_accuracy,original12,reported,91.7%,Predicted action equals gold policy action and does not abstain.
+overall_accuracy,original12,reported,83.3%,Exact severity match.
+macro_f1,original12,reported,0.543,Macro F1 across severity labels.
+abstention_rate,original12,reported,0.0%,Rate of backend abstention.
+false_negative_rate_high_critical,fresh,<10%,0.0%,0 of 0 high/critical cases were not escalated. 95% CI 0.0%-0.0%.
+false_positive_rate_normal_criticism,fresh,<15%,0.0%,0 of 0 normal criticism cases were prompted/escalated. PASS=True. 95% CI 0.0%-0.0%.
+hard_normal_false_positive_rate,fresh,reported,0.0%,0 of 0 hard-normal cases were prompted/escalated.
+action_accuracy,fresh,reported,0.0%,Predicted action equals gold policy action and does not abstain.
+overall_accuracy,fresh,reported,0.0%,Exact severity match.
+macro_f1,fresh,reported,0.000,Macro F1 across severity labels.
+abstention_rate,fresh,reported,0.0%,Rate of backend abstention.
+false_negative_rate_high_critical,combined,<10%,0.0%,0 of 4 high/critical cases were not escalated. 95% CI 0.0%-60.2%.
+false_positive_rate_normal_criticism,combined,<15%,0.0%,0 of 4 normal criticism cases were prompted/escalated. PASS=True. 95% CI 0.0%-60.2%.
+hard_normal_false_positive_rate,combined,reported,0.0%,0 of 0 hard-normal cases were prompted/escalated.
+action_accuracy,combined,reported,91.7%,Predicted action equals gold policy action and does not abstain.
+overall_accuracy,combined,reported,83.3%,Exact severity match.
+macro_f1,combined,reported,0.543,Macro F1 across severity labels.
+abstention_rate,combined,reported,0.0%,Rate of backend abstention.
+lazy_baseline_fnr_high_critical,combined,critique,0.0%,All-high baseline shows FNR can be gamed.
+lazy_baseline_fpr_normal_criticism,combined,critique,100.0%,All-high baseline over-prompts all normal criticism.
+context_strict_accuracy,context,reported,100.0%,Strict movement result over 5 context cases.
+context_lenient_accuracy,context,reported,100.0%,Lenient movement result; missed expected changes=0.
+jigsaw_threat_flagged_fnr,public_jigsaw,reported,21.4%,3 of 14 Jigsaw threat-flagged rows were not escalated.
+jigsaw_profanity_only_high_upgrade_rate,public_jigsaw,reported,15.4%,6 of 39 high-mapped rows without Jigsaw threat were escalated. These subsets separate actual Jigsaw threat flags from severe-toxic/profanity-only rows mapped to Shield high.

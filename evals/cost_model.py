@@ -40,9 +40,10 @@ CONFIG = {
             "output_per_million": 0.60,
         },
         "frontier_assumed": {
-            "model_id": "user_selected_frontier_model",
+            "model_id": "not_chosen_not_measured",
             "input_per_million": 5.00,
             "output_per_million": 15.00,
+            "measured": False,
         },
         "local_rules": {
             "model_id": "keyword_local",
@@ -291,16 +292,48 @@ def build_prevalence_sensitivity(results_dir: Path = RESULTS) -> list[dict[str, 
     return out
 
 
+def unmeasured_tiers(rows: list[dict[str, object]]) -> list[dict[str, object]]:
+    measured = {str(row["model_tier"]) for row in rows if row["prevalence_scenario"] == "platform_assumed"}
+    out = []
+    for tier, model in CONFIG["models"].items():
+        if tier == "local_rules":
+            continue
+        if tier not in measured:
+            out.append(
+                {
+                    "model_tier": tier,
+                    "model_id": model["model_id"],
+                    "status": "not measured",
+                    "reason": "No valid run for this tier; excluded from scenario table and no p reused from another tier.",
+                }
+            )
+    return out
+
+
 def break_even(rows: list[dict[str, object]]) -> list[dict[str, object]]:
     cheap = next((r for r in rows if r["model_tier"] == "cheap_assumed" and r["prevalence_scenario"] == "platform_assumed"), None)
-    frontier = next((r for r in rows if r["model_tier"] == "frontier_assumed" and r["prevalence_scenario"] == "platform_assumed"), None)
-    if not cheap or not frontier:
+    if not cheap:
+        return []
+    frontier_model = CONFIG["models"].get("frontier_assumed")
+    if not frontier_model:
         return []
     fallback = manual_review_cost()
+    if fallback <= 0:
+        return []
     cheap_total_per_task = float(cheap["total_cost_per_1000_comments"]) / 1000
-    frontier_token_per_task = float(frontier["token_cost_per_1000_comments"]) / 1000
-    p_star = 1 - (cheap_total_per_task - frontier_token_per_task) / fallback if fallback else 1.0
-    return [{"baseline": "cheap_assumed", "candidate": "frontier_assumed", "required_frontier_p": round(p_star, 6), "observed_frontier_p": frontier["p_action_success"], "conclusion": "frontier beats cheap" if float(frontier["p_action_success"]) >= p_star else "frontier does not beat cheap under ASSUMED prices"}]
+    frontier_token_per_task = token_cost(float(cheap["avg_input_tokens"]), float(cheap["avg_output_tokens"]), frontier_model)
+    p_star = 1 - (cheap_total_per_task - frontier_token_per_task) / fallback
+    return [
+        {
+            "baseline": "cheap_assumed",
+            "candidate": "frontier_assumed",
+            "required_frontier_p": round(p_star, 6),
+            "observed_cheap_p": cheap["p_action_success"],
+            "observed_frontier_p": "not measured",
+            "frontier_token_cost_assumption": "uses cheap measured token volume with frontier ASSUMED token prices",
+            "conclusion": "No frontier result was measured; do not claim frontier wins or loses.",
+        }
+    ]
 
 
 def write_report(rows: list[dict[str, object]], break_even_rows: list[dict[str, object]]) -> None:
@@ -324,9 +357,20 @@ def write_report(rows: list[dict[str, object]], break_even_rows: list[dict[str, 
     lines += ["", "## Break-even", ""]
     if break_even_rows:
         for row in break_even_rows:
-            lines.append(f"Frontier required p*: {row['required_frontier_p']}; observed frontier p: {row['observed_frontier_p']}; conclusion: {row['conclusion']}.")
+            lines.append(
+                f"Frontier required p*: {row['required_frontier_p']}; observed cheap p: {row['observed_cheap_p']}; "
+                f"observed frontier p: {row['observed_frontier_p']}. {row['conclusion']}"
+            )
+            lines.append(f"Note: {row['frontier_token_cost_assumption']}.")
     else:
-        lines.append("Break-even was not computed because valid cheap and frontier LLM runs are not both available.")
+        lines.append("Break-even was not computed because no valid cheap LLM run is available.")
+    lines += ["", "## Unmeasured Tiers", ""]
+    unmeasured = unmeasured_tiers(rows)
+    if unmeasured:
+        for item in unmeasured:
+            lines.append(f"- {item['model_tier']} ({item['model_id']}): {item['status']}. {item['reason']}")
+    else:
+        lines.append("No unmeasured configured LLM tiers.")
     lines += ["", "See `cost_sensitivity.csv` and `cost_prevalence_sensitivity.csv` for sensitivity tables."]
     (OUT_DIR / "cost_report.md").write_text("\n".join(lines) + "\n", encoding="utf-8")
 
@@ -341,6 +385,9 @@ def main() -> None:
     prevalence_rows = build_prevalence_sensitivity()
     if prevalence_rows:
         write_csv(OUT_DIR / "cost_prevalence_sensitivity.csv", prevalence_rows)
+    unmeasured = unmeasured_tiers(rows)
+    if unmeasured:
+        write_csv(OUT_DIR / "cost_unmeasured_tiers.csv", unmeasured)
     be_rows = break_even(rows)
     if be_rows:
         write_csv(OUT_DIR / "cost_break_even.csv", be_rows)

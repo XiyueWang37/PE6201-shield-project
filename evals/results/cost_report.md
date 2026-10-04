@@ -13,9 +13,16 @@ All prices, review time, review wages, monthly volume, prevalence, and harm-cost
 | --- | --- | --- | ---: | ---: | ---: | ---: | ---: | ---: |
 | keyword | local_rules | platform_assumed | 0.984833 | 0.0 | 10.111111 | 10.111111 | 2.333 | 0.007667 |
 | keyword | local_rules | eval_observed_reference_only | 0.666667 | 0.0 | 222.222222 | 222.222222 | 83.333 | 0.25 |
+| llm | cheap_assumed | platform_assumed | 0.9925 | 0.05633 | 5.0 | 5.05633 | 10.0 | 0.0 |
+| llm | cheap_assumed | eval_observed_reference_only | 0.916667 | 0.057437 | 55.555556 | 55.612993 | 333.333 | 0.0 |
 
 ## Break-even
 
-Break-even was not computed because valid cheap and frontier LLM runs are not both available.
+Frontier required p*: 0.994904; observed cheap p: 0.9925; observed frontier p: not measured. No frontier result was measured; do not claim frontier wins or loses.
+Note: uses cheap measured token volume with frontier ASSUMED token prices.
+
+## Unmeasured Tiers
+
+- frontier_assumed (not_chosen_not_measured): not measured. No valid run for this tier; excluded from scenario table and no p reused from another tier.
 
 See `cost_sensitivity.csv` and `cost_prevalence_sensitivity.csv` for sensitivity tables.

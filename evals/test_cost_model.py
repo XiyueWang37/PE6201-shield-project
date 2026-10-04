@@ -50,6 +50,23 @@ class CostModelTests(unittest.TestCase):
         with self.assertRaises(ValueError):
             cost_model.validate_run(invalid)
 
+    def test_unmeasured_frontier_is_not_reused_from_cheap(self) -> None:
+        cheap_row = {
+            "backend": "llm",
+            "model_tier": "cheap_assumed",
+            "model_id": "openai/gpt-4o-mini",
+            "prevalence_scenario": "platform_assumed",
+            "p_action_success": 0.9,
+            "avg_input_tokens": 200.0,
+            "avg_output_tokens": 40.0,
+            "total_cost_per_1000_comments": 66.7,
+        }
+        unmeasured = cost_model.unmeasured_tiers([cheap_row])
+        self.assertTrue(any(row["model_tier"] == "frontier_assumed" for row in unmeasured))
+        break_even = cost_model.break_even([cheap_row])
+        self.assertEqual(break_even[0]["observed_frontier_p"], "not measured")
+        self.assertNotEqual(break_even[0]["observed_frontier_p"], cheap_row["p_action_success"])
+
 
 if __name__ == "__main__":
     unittest.main()
