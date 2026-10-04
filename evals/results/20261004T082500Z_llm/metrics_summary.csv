@@ -1,0 +1,11 @@
+metric,target,result,notes
+backend,reported,llm,Evaluation backend.
+false_negative_rate_high_critical,<10%,0.0%,0 of 4 high/critical cases were not escalated. 95% CI 0.0%-60.2%.
+false_positive_rate_normal_criticism,<15%,100.0%,4 of 4 normal criticism cases were prompted/escalated. PASS=False. 95% CI 39.8%-100.0%.
+overall_accuracy,reported,0.0%,Exact severity match on the core set.
+macro_f1,reported,0.000,Macro F1 across severity labels.
+abstention_rate,reported,100.0%,Rate of backend abstention.
+lazy_baseline_fnr_high_critical,critique,0.0%,All-high baseline shows FNR can be gamed.
+lazy_baseline_fpr_normal_criticism,critique,100.0%,All-high baseline over-prompts all normal criticism.
+context_strict_accuracy,reported,40.0%,Strict movement result over 5 context cases.
+context_lenient_accuracy,reported,40.0%,Lenient movement result; missed expected changes=3.

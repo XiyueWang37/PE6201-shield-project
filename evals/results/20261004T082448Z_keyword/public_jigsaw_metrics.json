@@ -1,0 +1,19 @@
+{
+  "n": 300,
+  "elapsed_seconds": 0.028,
+  "false_positive_count": 5,
+  "normal_n": 100,
+  "false_positive_rate": 0.05,
+  "false_positive_ci_low": 0.016431879182051634,
+  "false_positive_ci_high": 0.11283491110546279,
+  "false_positive_target": 0.15,
+  "false_positive_pass": true,
+  "false_negative_count": 85,
+  "high_critical_n": 100,
+  "false_negative_rate": 0.85,
+  "false_negative_ci_low": 0.7646924998510451,
+  "false_negative_ci_high": 0.9135456143583514,
+  "accuracy": 0.38666666666666666,
+  "macro_f1": 0.19626623376623373,
+  "abstention_rate": 0.0
+}

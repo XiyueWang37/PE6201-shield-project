@@ -1,0 +1,6 @@
+true_label,normal,low,medium,high,critical,abstain
+normal,0,0,0,0,0,4
+low,0,0,0,0,0,0
+medium,0,0,0,0,0,4
+high,0,0,0,0,0,3
+critical,0,0,0,0,0,1

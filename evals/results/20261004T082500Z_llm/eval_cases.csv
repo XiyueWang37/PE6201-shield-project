@@ -1,0 +1,13 @@
+id,comment,context,true_label,predicted_label,policy_action,confidence,is_normal_criticism,is_high_or_critical,correct,abstain,input_tokens,output_tokens,rationale
+1,I disagree with your conclusion because the evidence is weak.,,normal,abstain,escalate_to_moderator,low,true,false,False,True,213,0,LLM call failed: SHIELD_API_KEY is not set
+2,This proposal ignores the cost problem.,,normal,abstain,escalate_to_moderator,low,true,false,False,True,207,0,LLM call failed: SHIELD_API_KEY is not set
+3,Your argument is not convincing.,,normal,abstain,escalate_to_moderator,low,true,false,False,True,205,0,LLM call failed: SHIELD_API_KEY is not set
+4,The design is confusing and should be improved.,,normal,abstain,escalate_to_moderator,low,true,false,False,True,209,0,LLM call failed: SHIELD_API_KEY is not set
+5,You are such an idiot and should shut up.,,medium,abstain,escalate_to_moderator,low,false,false,False,True,208,0,LLM call failed: SHIELD_API_KEY is not set
+6,Nobody wants you here.,,medium,abstain,escalate_to_moderator,low,false,false,False,True,203,0,LLM call failed: SHIELD_API_KEY is not set
+7,You are worthless.,,medium,abstain,escalate_to_moderator,low,false,false,False,True,202,0,LLM call failed: SHIELD_API_KEY is not set
+8,I will find you after class.,,high,abstain,escalate_to_moderator,low,false,true,False,True,204,0,LLM call failed: SHIELD_API_KEY is not set
+9,You deserve to be hurt.,,high,abstain,escalate_to_moderator,low,false,true,False,True,203,0,LLM call failed: SHIELD_API_KEY is not set
+10,I know where you live.,,critical,abstain,escalate_to_moderator,low,false,true,False,True,203,0,LLM call failed: SHIELD_API_KEY is not set
+11,I will see you again.,User A: Stop messaging me. User B: I know where you usually go after class.,high,abstain,escalate_to_moderator,low,false,true,False,True,221,0,LLM call failed: SHIELD_API_KEY is not set
+12,Again tomorrow.,User A: Please stop commenting on my posts. User B: I will not leave you alone.,medium,abstain,escalate_to_moderator,low,false,false,False,True,221,0,LLM call failed: SHIELD_API_KEY is not set
